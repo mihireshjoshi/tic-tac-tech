@@ -1,21 +1,60 @@
-import { React, useEffect, useState } from 'react'; 
 import { StatusBar } from 'expo-status-bar';
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Qr from './components/Qr';
-import QRCodeGenerator from './components/QrGenerator';
-import QRCodeScanner from './components/BarCodeScanner';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+const Stack = createNativeStackNavigator();
+
+import Login from './pages/Login';
+import Home from './pages/homePage';
+import RecentTransactions from './pages/recent_trans';
+import OCR from './pages/OCR';
+import FormPage from './pages/FormPage';
+import QRScannerComponent from './pages/QrScanner';
+import PayScreen from './pages/Pay_acc';
 
 export default function App() {
-  const [accountId, setAccountId] = useState('125655655');
   return (
-    <View style={styles.container}>
-      {/* <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" /> */}
-
-      {/* <Qr /> */}
-      {/* <QRCodeGenerator accountId={accountId}/> */}
-      <QRCodeScanner />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ocr"
+          component={OCR}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="pay_acc"
+          component={PayScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="qrscan"
+          component={QRScannerComponent}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="FormPage"
+          component={FormPage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Home"
+          component={Home}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="RecentTransacs"
+          component={RecentTransactions}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
