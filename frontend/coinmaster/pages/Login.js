@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert , StyleSheet } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Login = () => {
+const Login = ({ navigation }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -13,10 +13,10 @@ const Login = () => {
         }
         console.log("Payload: ", payload);
         try {
-            const response = await fetch("http://10.20.2.79:8000/login", {
+            const response = await fetch("http://10.20.2.124:8000/login", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json", // Corrected header
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(payload),
             });
@@ -25,9 +25,10 @@ const Login = () => {
             console.log("JSON Response: ", jsonResponse);
             if (jsonResponse.success) {
                 await AsyncStorage.setItem("auth_id", jsonResponse.auth_id);
-                // await AsyncStorage.setItem("account_id", jsonResponse.account_id);
-                // await AsyncStorage.getItem("auth_id")
                 console.log("Logged in!!");
+                navigation.navigate("Home");
+            } else {
+                Alert.alert("Login failed", jsonResponse.message);
             }
         } catch (err) {
             console.log("Error at client: ", err);
@@ -36,13 +37,12 @@ const Login = () => {
     }
 
     return (
-        <View>
+        <View style = {styles.container}>
             <Text>Email</Text>
             <TextInput
                 placeholder="email"
                 value={email}
                 onChangeText={setEmail}
-                // style={styles.input}
             />
             <Text>Password</Text>
             <TextInput
@@ -50,7 +50,6 @@ const Login = () => {
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={true}
-                // style={styles.input}
             />
             <TouchableOpacity onPress={handleLogin}>
                 <Text>Login</Text>
@@ -59,4 +58,13 @@ const Login = () => {
     )
 }
 
-export default Login
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+  });
+
+export default Login;
