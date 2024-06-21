@@ -4,11 +4,13 @@ import { View, Text, TouchableOpacity, StyleSheet, Dimensions, FlatList, Alert }
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../supabaseee/supacreds';
 import Icon from 'react-native-vector-icons/AntDesign';
-import CardFormModal from '../components/CardFormModal'
+import CardFormModal from './CardFormModal';
 const { width } = Dimensions.get('window');
 const cardWidth = width - 40;
 
 const CardCarousel = ({ onSelectCard }) => {
+  console.log("onSelectCard prop: ", onSelectCard); // Add this line
+
   const [cards, setCards] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -23,7 +25,8 @@ const CardCarousel = ({ onSelectCard }) => {
       if (error) {
         Alert.alert('Error', error.message);
       } else {
-        setCards(data);
+        const cardsWithIds = data.map((card, index) => ({ ...card, id: card.card_id || index.toString() }));
+        setCards(cardsWithIds);
       }
     };
 
@@ -31,7 +34,8 @@ const CardCarousel = ({ onSelectCard }) => {
   }, []);
 
   const handleAddCard = (newCard) => {
-    setCards([...cards, { ...newCard, id: cards.length + 1, title: `Card ${cards.length + 1}` }]);
+    const newCardWithId = { ...newCard, id: cards.length.toString() };
+    setCards([...cards, newCardWithId]);
     setModalVisible(false);
   };
 
@@ -45,15 +49,15 @@ const CardCarousel = ({ onSelectCard }) => {
           </TouchableOpacity>
         ) : (
           <>
-            <Text style={styles.cardNumber}>{item.cardNumber}</Text>
+            <Text style={styles.cardNumber}>{item.card_number}</Text>
             <View style={styles.cardBottom}>
               <View style={styles.cardHolderContainer}>
                 <Text style={styles.cardLabel}>Card Holder</Text>
-                <Text style={styles.cardDetail}>{item.cardholderName}</Text>
+                <Text style={styles.cardDetail}>{item.cardholder_name}</Text>
               </View>
               <View style={styles.validThruContainer}>
                 <Text style={styles.cardLabel}>Valid Thru</Text>
-                <Text style={styles.cardDetail}>{item.expirationDate}</Text>
+                <Text style={styles.cardDetail}>{item.expiration_date}</Text>
               </View>
               <View style={styles.cvvContainer}>
                 <Text style={styles.cardLabel}>CVV</Text>

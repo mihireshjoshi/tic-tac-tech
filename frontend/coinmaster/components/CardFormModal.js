@@ -1,4 +1,3 @@
-// CardFormModal.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, Modal, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,17 +5,17 @@ import { supabase } from '../supabaseee/supacreds';
 
 const CardFormModal = ({ visible, onClose, onSubmit }) => {
   const [cardDetails, setCardDetails] = useState({
-    cardNumber: '',
-    cardholderName: '',
-    expirationDate: '',
+    card_number: '',
+    cardholder_name: '',
+    expiration_date: '',
     cvv: '',
-    creditLimit: '',
+    credit_limit: '',
     balance: '',
     status: '',
-    issuedAt: '',
-    billingAddress: '',
-    rewardPoints: '',
-    interestRate: '',
+    issued_at: '',
+    billing_address: '',
+    reward_points: '',
+    interest_rate: '',
   });
 
   const handleAddCard = async () => {
@@ -35,17 +34,17 @@ const CardFormModal = ({ visible, onClose, onSubmit }) => {
     } else {
       onSubmit(cardDetails);
       setCardDetails({
-        cardNumber: '',
-        cardholderName: '',
-        expirationDate: '',
+        card_number: '',
+        cardholder_name: '',
+        expiration_date: '',
         cvv: '',
-        creditLimit: '',
+        credit_limit: '',
         balance: '',
         status: '',
-        issuedAt: '',
-        billingAddress: '',
-        rewardPoints: '',
-        interestRate: '',
+        issued_at: '',
+        billing_address: '',
+        reward_points: '',
+        interest_rate: '',
       });
     }
   };
@@ -62,20 +61,20 @@ const CardFormModal = ({ visible, onClose, onSubmit }) => {
           <TextInput
             style={styles.input}
             placeholder="Card Number"
-            value={cardDetails.cardNumber}
-            onChangeText={(text) => setCardDetails({ ...cardDetails, cardNumber: text })}
+            value={cardDetails.card_number}
+            onChangeText={(text) => setCardDetails({ ...cardDetails, card_number: text })}
           />
           <TextInput
             style={styles.input}
             placeholder="Cardholder Name"
-            value={cardDetails.cardholderName}
-            onChangeText={(text) => setCardDetails({ ...cardDetails, cardholderName: text })}
+            value={cardDetails.cardholder_name}
+            onChangeText={(text) => setCardDetails({ ...cardDetails, cardholder_name: text })}
           />
           <TextInput
             style={styles.input}
             placeholder="Expiration Date"
-            value={cardDetails.expirationDate}
-            onChangeText={(text) => setCardDetails({ ...cardDetails, expirationDate: text })}
+            value={cardDetails.expiration_date}
+            onChangeText={(text) => setCardDetails({ ...cardDetails, expiration_date: text })}
           />
           <TextInput
             style={styles.input}
@@ -86,8 +85,8 @@ const CardFormModal = ({ visible, onClose, onSubmit }) => {
           <TextInput
             style={styles.input}
             placeholder="Credit Limit"
-            value={cardDetails.creditLimit}
-            onChangeText={(text) => setCardDetails({ ...cardDetails, creditLimit: text })}
+            value={cardDetails.credit_limit}
+            onChangeText={(text) => setCardDetails({ ...cardDetails, credit_limit: text })}
           />
           <TextInput
             style={styles.input}
@@ -104,26 +103,26 @@ const CardFormModal = ({ visible, onClose, onSubmit }) => {
           <TextInput
             style={styles.input}
             placeholder="Issued At"
-            value={cardDetails.issuedAt}
-            onChangeText={(text) => setCardDetails({ ...cardDetails, issuedAt: text })}
+            value={cardDetails.issued_at}
+            onChangeText={(text) => setCardDetails({ ...cardDetails, issued_at: text })}
           />
           <TextInput
             style={styles.input}
             placeholder="Billing Address"
-            value={cardDetails.billingAddress}
-            onChangeText={(text) => setCardDetails({ ...cardDetails, billingAddress: text })}
+            value={cardDetails.billing_address}
+            onChangeText={(text) => setCardDetails({ ...cardDetails, billing_address: text })}
           />
           <TextInput
             style={styles.input}
             placeholder="Reward Points"
-            value={cardDetails.rewardPoints}
-            onChangeText={(text) => setCardDetails({ ...cardDetails, rewardPoints: text })}
+            value={cardDetails.reward_points}
+            onChangeText={(text) => setCardDetails({ ...cardDetails, reward_points: text })}
           />
           <TextInput
             style={styles.input}
             placeholder="Interest Rate"
-            value={cardDetails.interestRate}
-            onChangeText={(text) => setCardDetails({ ...cardDetails, interestRate: text })}
+            value={cardDetails.interest_rate}
+            onChangeText={(text) => setCardDetails({ ...cardDetails, interest_rate: text })}
           />
           <View style={styles.buttons}>
             <TouchableOpacity onPress={handleAddCard} style={styles.modalBtn}>

@@ -3,11 +3,11 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import CardCarousel from '../components/carousel';
 
-
 const CardDetailsPage = () => {
   const [selectedCard, setSelectedCard] = useState(null);
 
   const handleCardSelect = (card) => {
+    console.log("Card selected: ", card);
     setSelectedCard(card);
   };
 
@@ -17,17 +17,17 @@ const CardDetailsPage = () => {
       {selectedCard && (
         <ScrollView style={styles.detailsContainer}>
           <Text style={styles.detailTitle}>Card Details</Text>
-          <Text style={styles.detailLabel}>Card Number: {selectedCard.cardNumber}</Text>
-          <Text style={styles.detailLabel}>Cardholder Name: {selectedCard.cardholderName}</Text>
-          <Text style={styles.detailLabel}>Expiration Date: {selectedCard.expirationDate}</Text>
+          <Text style={styles.detailLabel}>Card Number: {selectedCard.card_number}</Text>
+          <Text style={styles.detailLabel}>Cardholder Name: {selectedCard.cardholder_name}</Text>
+          <Text style={styles.detailLabel}>Expiration Date: {selectedCard.expiration_date}</Text>
           <Text style={styles.detailLabel}>CVV: {selectedCard.cvv}</Text>
-          <Text style={styles.detailLabel}>Credit Limit: {selectedCard.creditLimit}</Text>
+          <Text style={styles.detailLabel}>Credit Limit: {selectedCard.credit_limit}</Text>
           <Text style={styles.detailLabel}>Balance: {selectedCard.balance}</Text>
           <Text style={styles.detailLabel}>Status: {selectedCard.status}</Text>
-          <Text style={styles.detailLabel}>Issued At: {selectedCard.issuedAt}</Text>
-          <Text style={styles.detailLabel}>Billing Address: {selectedCard.billingAddress}</Text>
-          <Text style={styles.detailLabel}>Reward Points: {selectedCard.rewardPoints}</Text>
-          <Text style={styles.detailLabel}>Interest Rate: {selectedCard.interestRate}</Text>
+          <Text style={styles.detailLabel}>Issued At: {selectedCard.issued_at}</Text>
+          <Text style={styles.detailLabel}>Billing Address: {selectedCard.billing_address}</Text>
+          <Text style={styles.detailLabel}>Reward Points: {selectedCard.reward_points}</Text>
+          <Text style={styles.detailLabel}>Interest Rate: {selectedCard.interest_rate}</Text>
         </ScrollView>
       )}
     </View>
