@@ -15,11 +15,12 @@ import QRScannerComponent from './pages/QrScanner';
 import PayScreen from './pages/Pay_acc';
 import QRCodeScanner from './pages/BarCodeScanner';
 import ChatScreen from './pages/Chatbot';
+import SplashScreen from './pages/Opening';
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="Opening">
         <Stack.Screen
           name="Login"
           component={Login}
@@ -64,6 +65,11 @@ export default function App() {
           name="Chatbot"
           component={ChatScreen}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Opening"
+          component={SplashScreen}
+          options={{headerShown: false}}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -16,6 +16,7 @@ import google.generativeai as genai
 import google.ai.generativelanguage as glm
 from io import BytesIO
 import re
+from pydantic import BaseModel
 
 from language import transcribe, translation
 from chatbot import ask_llm
@@ -46,6 +47,60 @@ CAPTURE_DIR = "/Users/mihiresh/Desktop/kleos/tic-tac-tech/backend/mihiresh/captu
 
 supabase: Client = create_client(supabase_url=supabase_url, supabase_key=supabase_api)
 
+
+class SignUpRequest(BaseModel):
+    email: str
+    password: str
+    phone_number: str
+    first_name: str
+    last_name: str
+    date_of_birth: str
+    address: str
+    city: str
+    state: str
+    country: str
+    zip_code: str
+    registration_date: str
+    language: str
+    balance: float
+    salary: float
+    occupation: str
+
+class CreditCardRequest(BaseModel):
+    card_number: str
+    cardholder_name: str
+    expiration_date: str
+    cvv: str
+    credit_limit: float
+    balance: float
+    status: str
+    issued_at: str
+    billing_address: str
+    reward_points: float
+    interest_rate: float
+
+@app.post("/signup")
+async def sign_up(sign_up_request: SignUpRequest):
+    auth_response = supabase.auth.sign_up({
+        'email': sign_up_request.email,
+        'password': sign_up_request.password
+    })
+
+    if 'error' in auth_response:
+        raise HTTPException(status_code=400, detail=auth_response['error'])
+
+    auth_id = auth_response['data']['user']['id']
+
+    user_data = sign_up_request.dict()
+    user_data['auth_id'] = auth_id
+    # Break the code here
+    # response = supabase.from_('users_b').insert(user_data).execute()
+
+    # if 'error' in response:
+    #     raise HTTPException(status_code=400, detail=response['error'])
+
+    return {"message": "User signed up successfully", "auth_id": auth_id}
+
 @app.post("/login")
 async def user_login(request: Request):
     try:
@@ -65,7 +120,7 @@ async def user_login(request: Request):
     
 
 def generate_varchar_id(length=12):
-    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+    return ''.join(random.choices( string.digits, k=length))
 
 
 @app.post("/add_users_b")
@@ -188,15 +243,51 @@ async def add_account(
         return JSONResponse(content={"message": "failure"}, status_code=500)
     
 
-@app.post("/add_card")
-async def add_card(
-
+@app.post("/add_credit_card/")
+async def add_credit_card(
+    account_id: str = Form(...),
+    card_number: str = Form(...),
+    cardholder_name: str = Form(...),
+    expiration_date: str = Form(...),
+    cvv: str = Form(...),
+    credit_limit: float = Form(...),
+    balance: float = Form(...),
+    status: str = Form(...),
+    issued_at: str = Form(...),
+    billing_address: str = Form(...),
+    reward_points: float = Form(...),
+    interest_rate: float = Form(...)
 ):
     try:
-        return JSONResponse(content={"message": "Did Work!!", "success": True}, status_code=True)
+        # Create credit card data dictionary
+        issued_at = datetime.strptime(issued_at, "%d/%m/%Y").strftime("%Y-%m-%d")
+        expiration_date = datetime.strptime(expiration_date, "%d/%m/%Y").strftime("%Y-%m-%d")
+        credit_card_data = {
+            'card_id': generate_varchar_id(),
+            'account_id': account_id,
+            'card_number': card_number,
+            'cardholder_name': cardholder_name,
+            'expiration_date': expiration_date,
+            'cvv': cvv,
+            'credit_limit': credit_limit,
+            'balance': balance,
+            'status': status,
+            'issued_at': issued_at,
+            'billing_address': billing_address,
+            'reward_points': reward_points,
+            'interest_rate': interest_rate,
+        }
+
+        # Insert data into the credit_cards table
+        response = supabase.table('credit_cards').insert(credit_card_data).execute()
+
+        if 'error' in response:
+            raise HTTPException(status_code=400, detail=response['error'])
+
+        return {"message": "Credit card added successfully", "card_id": credit_card_data['card_id']}
     except Exception as e:
-        print(f"\n\nError in Adding a Card:\n{e}")
-        return JSONResponse(content={"message": "Failed to add card", "success": False}, status_code=False)
+        print(f"Error: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
     
 
 @app.post("/payment")
@@ -293,6 +384,26 @@ async def process_ocr(files: List[UploadFile] = File(...)):
 # @app.post("/ocr_steps")
 
 
+
+class DeleteUserRequest(BaseModel):
+    auth_id: str
+
+@app.delete("/delete-user")
+async def delete_user(delete_user_request: DeleteUserRequest):
+    try:
+        # Perform delete using raw SQL query
+        sql_query = f"""
+        DELETE FROM auth.users
+        WHERE id = '{delete_user_request.auth_id}'
+        """
+        response = supabase.rpc("execute_sql", {"sql": sql_query}).execute()
+        
+        if response.status_code == 200:
+            return {"message": "User deleted successfully"}
+        else:
+            raise HTTPException(status_code=400, detail=f"Error deleting user: {response}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":
