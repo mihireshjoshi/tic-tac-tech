@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, TextInput, Modal, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, View, TextInput, Modal, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import * as Animatable from 'react-native-animatable';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from "@react-navigation/native";
 import LottieView from 'lottie-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const QRCodeScanner = () => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -15,6 +16,8 @@ const QRCodeScanner = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showSplash, setShowSplash] = useState(false);
+  const [senderAccountId, setSenderAccountId] = useState('');
+  const [email, setEmail] = useState('');
 
   const navigation = useNavigation();
 
@@ -24,7 +27,13 @@ const QRCodeScanner = () => {
       setHasPermission(status === 'granted');
     };
 
+    const getSenderAccountId = async () => {
+      const accountId = await AsyncStorage.getItem('account_id');
+      setSenderAccountId(accountId);
+    };
+
     getBarCodeScannerPermissions();
+    getSenderAccountId();
   }, []);
 
   const handleBarCodeScanned = ({ type, data }) => {
@@ -34,32 +43,111 @@ const QRCodeScanner = () => {
 
   const handlePayment = async () => {
     try {
-      const payload = { accountId, amount, password };
-      const response = await fetch('http://10.20.2.79:8000/payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-      console.log('Response status: ', response.status);
-      const jsonResponse = await response.json();
-      console.log('JSON Response: ', jsonResponse);
-      // Handle the response as needed
-      setShowSplash(true);
-      setTimeout(() => {
-        setShowSplash(false);
-        navigation.navigate("Home");
-      }, 3000);
+        const email = await AsyncStorage.getItem('email');
+        const payload = {
+            sender_account_id: senderAccountId,  // Ensure this is correct
+            receiver_account_id: accountId,     // Ensure this is correct
+            amount: parseFloat(amount),         // Ensure this is correct
+            password: password,                 // Ensure this is correct
+            email: email,                       // Ensure this is correct
+        };
+
+        // Verify password
+        const verifyResponse = await fetch('http://10.20.2.79:8000/verify-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: email, password: password }),
+        });
+
+        if (verifyResponse.status !== 200) {
+            Alert.alert('Invalid Password', 'The password you entered is incorrect.');
+            return;
+        }
+
+        // Create the transaction
+        const createResponse = await fetch('http://10.20.2.79:8000/create-transaction', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (createResponse.status !== 200) {
+            const errorResponse = await createResponse.json();
+            Alert.alert('Transaction Error', errorResponse.detail || 'Failed to create transaction.');
+            return;
+        }
+
+        const createJsonResponse = await createResponse.json();
+        const { transaction_id } = createJsonResponse;
+
+        // Process the transaction
+        const processResponse = await fetch('http://10.20.2.79:8000/process-transaction', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ transaction_id }),
+        });
+
+        console.log('Response status: ', processResponse.status);
+        const jsonResponse = await processResponse.json();
+        console.log('JSON Response: ', jsonResponse);
+
+        if (jsonResponse.success) {
+            // Handle the response as needed
+            setShowSplash(true);
+            setTimeout(() => {
+                setShowSplash(false);
+                navigation.navigate("Home");
+            }, 3000);
+        } else {
+            if (jsonResponse.message === "Fraudulent transaction detected. OTP sent for verification.") {
+                // Handle OTP verification
+                const otp = prompt("Enter the OTP sent to your phone:");
+                if (otp) {
+                    const verifyOtpResponse = await fetch('http://10.20.2.79:8000/verify-otp', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ transaction_id, otp }),
+                    });
+                    const verifyOtpJsonResponse = await verifyOtpResponse.json();
+                    if (verifyOtpJsonResponse.success) {
+                        Alert.alert('Success', 'Transaction completed successfully.');
+                    } else {
+                        Alert.alert('Error', verifyOtpJsonResponse.message);
+                    }
+                } else {
+                    // If OTP is not entered, discard the transaction
+                    await fetch('http://10.20.2.79:8000/discard-transaction', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ transaction_id }),
+                    });
+                    Alert.alert('Error', 'Transaction discarded due to missing OTP.');
+                }
+            } else {
+                Alert.alert('Transaction Error', jsonResponse.message);
+            }
+        }
     } catch (error) {
-      console.error('Error:', error);
+        console.error('Error:', error);
+        Alert.alert('Error', 'An error occurred during the transaction.');
     } finally {
-      setModalVisible(false);
-      setScanned(false);
-      setAmount('');
-      setPassword('');
+        setModalVisible(false);
+        setScanned(false);
+        setAmount('');
+        setPassword('');
     }
-  };
+};
+
 
   if (hasPermission === null) {
     return <Text>Requesting for camera permission</Text>;

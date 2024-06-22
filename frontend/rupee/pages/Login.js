@@ -43,6 +43,7 @@ const Login = () => {
         } else {
           await AsyncStorage.setItem('account_id', data.account_id);
           await AsyncStorage.setItem('language', data.language);
+          await AsyncStorage.setItem('email', email);
           console.log('Account ID stored!!');
           navigation.navigate('Home');
         }

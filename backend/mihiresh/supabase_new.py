@@ -19,6 +19,11 @@ import re
 from pydantic import BaseModel
 from twilio.rest import Client as TwilioClient
 import sys
+import joblib
+from datetime import datetime, timedelta
+import pandas as pd
+from dateutil import parser
+
 
 from language import transcribe, translation
 from chatbot import ask_llm
@@ -27,6 +32,8 @@ from fraud import process_transaction, is_otp_valid
 
 app = FastAPI()
 
+xgb_model = joblib.load('xgb_model.pkl')
+scaler = joblib.load('scaler.pkl')
 
 API_KEY = "AIzaSyApEBnz_XHwaeDUrBgYL31wq4yN6RcyiJA"
 genai.configure(api_key=API_KEY)
@@ -49,6 +56,14 @@ CAPTURE_DIR = "/Users/mihiresh/Desktop/kleos/tic-tac-tech/backend/mihiresh/captu
 
 
 supabase: Client = create_client(supabase_url=supabase_url, supabase_key=supabase_api)
+
+
+account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+twilio_client = TwilioClient(account_sid, auth_token)
+
+otp_storage = {}
+
 
 
 class SignUpRequest(BaseModel):
@@ -82,15 +97,32 @@ class CreditCardRequest(BaseModel):
     reward_points: float
     interest_rate: float
 
+
+
+
+class VerifyPasswordRequest(BaseModel):
+    email: str
+    password: str
+
+class CreateTransactionRequest(BaseModel):
+    sender_account_id: str
+    receiver_account_id: str
+    amount: float
+    password: str
+    email: str
+
+class ProcessTransactionRequest(BaseModel):
+    transaction_id: str
+
+class OTPVerification(BaseModel):
+    transaction_id: str
+    otp: str
+
 class Transaction(BaseModel):
     id: str
     sender_account_id: int
     transaction_id: int
     phone_number: str = "+919987117266"
-
-class OTPVerification(BaseModel):
-    transaction_id: str
-    otp: str
 
 
 @app.post("/signup")
@@ -408,7 +440,225 @@ async def delete_user(delete_user_request: DeleteUserRequest):
         raise HTTPException(status_code=500, detail=str(e))
     
 
-# @app.route("/in")
+def generate_otp():
+    return str(random.randint(100000, 999999))
+
+def send_otp(phone_number, otp):
+    message = twilio_client.messages.create(
+        body=f"Your OTP for transaction verification is: {otp}",
+        from_='+12166778068',
+        to=phone_number
+    )
+    return message.sid
+
+def store_otp(transaction_id, otp):
+    otp_storage[transaction_id] = {'otp': otp, 'timestamp': datetime.now()}
+
+def is_otp_valid(transaction_id, input_otp):
+    if transaction_id not in otp_storage:
+        return False
+    otp_info = otp_storage[transaction_id]
+    if otp_info['otp'] != input_otp:
+        return False
+    if datetime.now() > otp_info['timestamp'] + timedelta(minutes=2):
+        return False
+    return True
+
+def fetch_transaction_amounts(user_id):
+    response = supabase.table("transactions").select("amount").eq("sender_account_id", user_id).execute()
+    amounts = [record['amount'] for record in response.data]
+    return amounts
+
+def calculate_average_transaction_amount(amounts):
+    if len(amounts) == 0:
+        return 0
+    return sum(amounts) / len(amounts)
+
+def calculate_city_consistency(sender_account_id, transaction_id):
+    transactions_response = supabase.table('transactions').select('sender_location, receiver_location').eq('sender_account_id', sender_account_id).execute()
+    transactions = transactions_response.data
+    total_transactions = len(transactions)
+
+    if total_transactions == 0:
+        print('No transactions found for the user.')
+        return None
+
+    sender_city_counts = {}
+    receiver_city_counts = {}
+
+    for transaction in transactions:
+        sender_city = transaction['sender_location']
+        receiver_city = transaction['receiver_location']
+
+        sender_city_counts[sender_city] = sender_city_counts.get(sender_city, 0) + 1
+        receiver_city_counts[receiver_city] = receiver_city_counts.get(receiver_city, 0) + 1
+
+    sender_city_consistencies = {city: count / total_transactions for city, count in sender_city_counts.items()}
+    receiver_city_consistencies = {city: count / total_transactions for city, count in receiver_city_counts.items()}
+
+    transaction_response = supabase.table('transactions').select("""
+        amount,
+        timestamp,
+        sender_location,
+        receiver_location,
+        country_consistency
+    """).eq('transactions_id', transaction_id).single().execute()
+
+    data = transaction_response.data
+    if data:
+        timestamp = data['timestamp']
+        timestamp_dt = parser.isoparse(timestamp)
+        data.update({
+            'transaction_hour': timestamp_dt.hour,
+            'transaction_day_of_week': timestamp_dt.weekday(),
+            'transaction_day': timestamp_dt.day,
+            'transaction_month': timestamp_dt.month,
+            'transaction_year': timestamp_dt.year,
+            'sender_city_consistency': sender_city_consistencies.get(data['sender_location'], 0),
+            'receiver_city_consistency': receiver_city_consistencies.get(data['receiver_location'], 0),
+        })
+
+    return data
+
+def predicting(sender_account_id, transaction_id):
+    value = calculate_city_consistency(sender_account_id, transaction_id)
+    if not value:
+        print('Failed to calculate transaction params.')
+        return
+
+    transaction_amounts = fetch_transaction_amounts(sender_account_id)
+    average_transaction_amount = calculate_average_transaction_amount(transaction_amounts)
+    value['avg_transaction_amount'] = average_transaction_amount
+    value['country_consistency'] = 1
+
+    new_entry = {
+        "amount": value["amount"],
+        "transaction_hour": value["transaction_hour"],
+        "transaction_day_of_week": value["transaction_day_of_week"],
+        "avg_transaction_amount": value["avg_transaction_amount"],
+        "sender_city_consistency": value["sender_city_consistency"],
+        "receiver_city_consistency": value["receiver_city_consistency"],
+        "country_consistency": value["country_consistency"],
+        "transaction_day": value["transaction_day"],
+        "transaction_month": value["transaction_month"],
+        "transaction_year": value["transaction_year"]
+    }
+
+    new_entry_df = pd.DataFrame([new_entry])
+    columns = [
+        "amount", "transaction_hour", "transaction_day_of_week",
+        "avg_transaction_amount", "country_consistency", "transaction_day",
+        "transaction_month", "transaction_year", "receiver_city_consistency",
+        "sender_city_consistency"
+    ]
+
+    new_entry_df = new_entry_df[columns]
+    new_entry_scaled = scaler.transform(new_entry_df)
+
+    y_pred_prob = xgb_model.predict_proba(new_entry_scaled)[:, 1]
+    best_threshold = 0.63
+    y_pred = (y_pred_prob > best_threshold).astype(int)
+
+    if y_pred[0] == 1:
+        return True
+    return False
+
+@app.post("/verify-password")
+def verify_password(request: VerifyPasswordRequest):
+    try:
+        response = supabase.auth.sign_in_with_password({
+            "email": request.email,
+            "password": request.password
+        })
+        # if 'user' not in response:
+        #     raise HTTPException(status_code=403, detail="Invalid password")
+        print(f"\n\nResponse: \n{response}\n\n")
+    except Exception as e:
+        raise HTTPException(status_code=403, detail="Invalid password")
+    return {"message": "Password verified"}
+
+
+@app.post("/create-transaction")
+async def create_transaction(request: CreateTransactionRequest):
+    try:
+        transaction_id = generate_varchar_id()
+        timestamp = datetime.utcnow().isoformat()
+
+        # Log the incoming request
+        print(f"\n\nCreate Transaction Request:\n{request}\n\n")
+
+        # Fetch sender and receiver locations
+        sender_response = supabase.table('users_b').select('city').eq('account_id', request.sender_account_id).single().execute()
+        receiver_response = supabase.table('users_b').select('city').eq('account_id', request.receiver_account_id).single().execute()
+
+        if not sender_response.data or not receiver_response.data:
+            raise HTTPException(status_code=404, detail="Sender or receiver not found")
+
+        sender_location = sender_response.data['city']
+        receiver_location = receiver_response.data['city']
+
+        data = {
+            "transactions_id": transaction_id,
+            "sender_account_id": request.sender_account_id,
+            "receiver_account_id": request.receiver_account_id,
+            "amount": request.amount,
+            "timestamp": timestamp,
+            "status": "pending",
+            "sender_location": sender_location,
+            "receiver_location": receiver_location
+        }
+
+        response = supabase.table('transactions').insert(data).execute()
+        print(f"\n\nResponse Transaction is:\n{response}\n\n")
+
+        # Check if there was an error during the insert operation
+        # if response.error:
+        #     raise HTTPException(status_code=500, detail="Failed to create transaction")
+
+        return {"transaction_id": transaction_id}
+    except Exception as e:
+        print(f"\n\nException in create-transaction: {e}\n\n")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/process-transaction")
+def process_transaction(request: ProcessTransactionRequest):
+    transaction_response = supabase.table('transactions').select('*').eq('transactions_id', request.transaction_id).single().execute()
+    transaction_data = transaction_response.data
+
+    if not transaction_data:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+
+    transaction = Transaction(
+        id=transaction_data['transactions_id'],
+        sender_account_id=transaction_data['sender_account_id'],
+        transaction_id=request.transaction_id,
+        phone_number="+919987117266"
+    )
+    return process_transaction_logic(transaction)
+
+def process_transaction_logic(transaction: Transaction):
+    is_fraudulent = predicting(transaction.sender_account_id, transaction.transaction_id)
+    if is_fraudulent:
+        otp = generate_otp()
+        send_otp(transaction.phone_number, otp)
+        store_otp(transaction.id, otp)
+        return {"message": "Fraudulent transaction detected. OTP sent for verification.", "success": False}
+    else:
+        supabase.table('transactions').update({"status": "completed"}).eq('transactions_id', transaction.transaction_id).execute()
+        
+    
+        return {"message": "Transaction processed successfully.", "success": True}
+
+@app.post("/verify-otp")
+def verify_otp(request: OTPVerification):
+    if is_otp_valid(request.transaction_id, request.otp):
+        supabase.table('transactions').update({"status": "completed"}).eq('transactions_id', request.transaction_id).execute()
+        return {"message": "OTP verified. Transaction completed.", "success": True}
+    else:
+        supabase.table('transactions').delete().eq('transactions_id', request.transaction_id).execute()
+        return {"message": "Invalid OTP. Transaction discarded.", "success": False}
 
 @app.get("/test-predict")
 def test_predict(sender_account_id: int, transaction_id: int):
@@ -425,15 +675,7 @@ def test_predict(sender_account_id: int, transaction_id: int):
         transaction_id=transaction_id,
         phone_number=phone_number
     )
-    return process_transaction(transaction)
-
-@app.post("/verify-otp")
-def verify_otp(verification: OTPVerification):
-    if is_otp_valid(verification.transaction_id, verification.otp):
-        return {"message": "OTP verified successfully. Transaction approved."}
-    else:
-        raise HTTPException(status_code=400, detail="Invalid or expired OTP.")
-
+    return process_transaction_logic(transaction)
 
 
 if __name__ == "__main__":
