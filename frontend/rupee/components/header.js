@@ -4,11 +4,12 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/Ionicons';
 import QRCodeGenerator from './QrGenerator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 const HeaderComponent = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [accountId, setAccountID] = useState("");
-
+  const navigation = useNavigation();
   const handleAccountId = async () => {
     try {
       const account_id = await AsyncStorage.getItem("account_id");
@@ -34,10 +35,8 @@ const HeaderComponent = () => {
           <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Icon name="qr-code-outline" size={28} color="#0B549D" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => alert('Notification clicked')}>
-            <FontAwesome5 name="bell" size={28} color="#0B549D" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => alert('Profile clicked')}>
+
+          <TouchableOpacity onPress={() =>   navigation.navigate('profile' )}>
             <FontAwesome5 name="user-circle" size={28} color="#0B549D" />
           </TouchableOpacity>
         </View>
@@ -91,9 +90,9 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     flexDirection: 'row',
+    alignItems:'flex-end',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    width: 120,
+    width: 80,
   },
   modalOverlay: {
     flex: 1,

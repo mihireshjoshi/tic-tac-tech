@@ -1,0 +1,170 @@
+{
+    "AddImageComp": {
+        "AddImage": "छवि जोडा",
+        "Camera": "कॅमेरा",
+        "Gallery": "गॅलरी",
+        "Cancel": "रद्द करा",
+        "Next": "पुढे",
+        "PleaseAddImage": "कृपया अगोदर जोडी तसेच आगे बढा",
+        "CameraPermission": "क्षमा करा, आम्हाला कॅमेरा परवानगीपासून आवश्यक आहे",
+        "MediaLibraryPermission": "क्षमा करा, आम्हाला मिडिया लायब्ररी परवानगीपासून आवश्यक आहे"
+    },
+    "CardFormModal": {
+        "AddCardDetails": "कार्ड तपशील जोडा",
+        "CardNumber": "कार्ड नंबर",
+        "CardholderName": "कार्डधारकाचे नाव",
+        "ExpirationDate": "समाप्तीची तारीख",
+        "CVV": "सीव्हीव्ही",
+        "CreditLimit": "क्रेडिट लिमिट",
+        "Balance": "शिल्लक",
+        "Status": "स्थिती",
+        "IssuedAt": "जारी केले",
+        "BillingAddress": "बिलिंग पत्ता",
+        "RewardPoints": "पारितोषिक गुण",
+        "InterestRate": "व्याज दर",
+        "AddCard": "कार्ड जोडा",
+        "Cancel": "रद्द करा"
+    },
+    "carousel": {
+        "AddCard": "कार्ड जोडा",
+        "CardHolder": "कार्डधारक",
+        "ValidThru": "वैध तक",
+        "CVV": "सीव्हीव्ही"
+    },
+    "CreditCardApplicationForm": {
+        "CreditCardApplication": "क्रेडिट कार्ड अर्ज",
+        "FullName": "पूर्ण नाव",
+        "DateOfBirth": "जन्म तारीख",
+        "Address": "पत्ता",
+        "AnnualIncome": "वार्षिक आय",
+        "EmploymentStatus": "रोजगार स्थिती",
+        "BankName": "बँकचे नाव",
+        "ExistingCreditCardNumber": "मालकीचे क्रेडिट कार्ड नंबर (जर असेल)",
+        "PreferredCreditLimit": "प्राधान्य क्रेडिट लिमिट"
+    },
+    "docs": {
+        "Investments": "निवेश",
+        "crypto": "क्रिप्टो",
+        "stocks": "स्टॉक्स",
+        "bonds": "बॉंड्स",
+        "properties": "मालमत्ता"
+    },
+    "creditCardModal": {
+        "CardDetails": "कार्ड तपशील",
+        "CardNumber": "कार्ड नंबर",
+        "CardholderName": "कार्डधारकाचे नाव",
+        "ExpirationDate": "समाप्तीची तारीख",
+        "CVV": "सीव्हीव्ही",
+        "CreditLimit": "क्रेडिट लिमिट",
+        "Balance": "शिल्लक",
+        "Status": "स्थिती",
+        "IssuedAt": "जारी केले",
+        "BillingAddress": "बिलिंग पत्ता",
+        "RewardPoints": "पारितोषिक गुण",
+        "InterestRate": "व्याज दर",
+        "Close": "बंद करा"
+    },
+    "DocumentCarousel": {
+        "LoanApplication": "ऋण अर्ज",
+        "FixedDeposit": "स्थिर ठेव",
+        "CreditCardApplication": "क्रेडिट कार्ड अर्ज"
+    },
+    "FixedDepositForm": {
+        "FixedDeposit": "स्थिर ठेव",
+        "FullName": "पूर्ण नाव",
+        "DateOfBirth": "जन्म तारीख",
+        "Address": "पत्ता",
+        "DepositAmount": "ठेव रक्कम",
+        "DepositTenure": "ठेवकाल (वर्षांत)",
+        "BankName": "बँकचे नाव",
+        "AccountNumber": "खात्याची क्रमांक",
+        "InterestRate": "व्याज दर (%)"
+    },
+    "header": {
+        "Notification": "सूचना थिश्य",
+        "Profile": "प्रोफाइल थिश्य",
+        "Logo": "लोगो",
+        "QRCode": "QR कोड",
+        "account_id": "खात्याची ओळख"
+    },
+    "investments": {
+        "Investments": "निवेश",
+        "crypto": "क्रिप्टो",
+        "stocks": "स्टॉक्स",
+        "bonds": "बॉंड्स",
+        "properties": "मालमत्ता",
+        "bitcoin": "बिटकॉइन",
+        "line-chart": "रेषा चार्ट"
+    },
+    "LoanApplicationForm": {
+        "LoanApplication": "ऋण अर्ज",
+        "FullName": "पूर्ण नाव",
+        "DateOfBirth": "जन्म तारीख",
+        "Address": "पत्ता",
+        "LoanAmount": "ऋण रक्कम",
+        "LoanTenure": "ऋणकाल (वर्षांत)",
+        "AnnualIncome": "वार्षिक आय",
+        "EmploymentStatus": "रोजगार स्थिती",
+        "PurposeOfLoan": "ऋणाचा उद्देश"
+    },
+    "navBar": {
+        "Home": "घर",
+        "Chatbot": "चॅटबॉट",
+        "QRCode": "QR कोड",
+        "Card": "कार्ड",
+        "Profile": "प्रोफाइल",
+        "homePressed": "घर दाबा",
+        "chatbotPressed": "चॅटबॉट दाबा",
+        "qrscanPressed": "QR स्कॅन दाबा",
+        "cardPressed": "कार्ड दाबा",
+        "profilePressed": "प्रोफाइल दाबा"
+    },
+    "password_modal": {
+        "EnterPassword": "पासवर्ड प्रविष्ट करा",
+        "Password": "पासवर्ड",
+        "Submit": "सबमिट करा",
+        "Cancel": "रद्द करा"
+    },
+    "pay": {
+        "MakePayment": "पेमेंट करा",
+        "QR": "QR",
+        "Account": "खाते",
+        "ToPayee": "पेर्सनला पेमेंट करा",
+        "Please": "कृपया",
+        "Done": "केले"
+    },
+    "qrModal": {
+        "ScanQR": "QR स्कॅन करा",
+        "Please": "कृपया",
+        "Done": "केले"
+    },
+    "transaction_boxx": {
+        "TransactionDetails": "व्यवहार तपशील",
+        "Amount": "रक्कम",
+        "Date": "तारीख",
+        "From": "पासून",
+        "To": "किरकोळ",
+        "status": "स्थिती"
+    },
+    "transactions": {
+        "TransactionHistory": "व्यवहार इतिहास",
+        "Amount": "रक्कम",
+        "Date": "तारीख",
+        "From": "पासून",
+        "To": "किरकोळ",
+        "status": "स्थिती"
+    },
+    "QrScanner": {
+        "ScanQR": "QR स्कॅन करा",
+        "Please": "कृपया",
+        "Done": "केले"
+    },
+    "recent_trans": {
+        "RecentTransactions": "अलिकडील व्यवहार",
+        "Amount": "रक्कम",
+        "Date": "तारीख",
+        "From": "पासून",
+        "To": "किरकोळ",
+        "status": "स्थिती"
+    }
+}

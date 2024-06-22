@@ -3,14 +3,50 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { LinearGradient } from 'expo-linear-gradient';
 
+
+const loadLocalizedData = async () => {
+  try {
+      const language = await AsyncStorage.getItem("language");
+      console.log(language);
+      switch (language) {
+          case "Hindi":
+              return require("../assets/languages/hindi.json");
+          case "Marathi":
+              return require("../assets/languages/marathi.json");
+          case "English":
+              return require("../assets/languages/english.json");
+          default:
+              return require("../assets/languages/english.json"); // default to English if undefined
+      }
+  } catch (error) {
+      console.error("Failed to load the language file", error);
+      return require("../assets/languages/english.json"); // default to English on error
+  }
+};
+
+
 const Documents = ({ navigation }) => {
   const handleDocumentClick = (formType) => {
     navigation.navigate('FormPage', { formType });
   };
+  const [jsonData, setJsonData] = useState({
+    
+    docs: {
+    Documents:"Documents",
+    FixedDeposit: "Fixed Deposit",
+    LoanApplication: "Loan Application",
+    CreditCardApp: "Credit Card App"
+    },
+});
+useEffect(() => {
+loadLocalizedData().then((data) => {
+    setJsonData(data);
+});
+}, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Documents</Text>
+      <Text style={styles.title}>{jsonData.docs.Documents}</Text>
       <View style={styles.optionsContainer}>
         <TouchableOpacity style={styles.option} onPress={() => handleDocumentClick('Fixed Deposit')}>
           <LinearGradient
@@ -20,7 +56,7 @@ const Documents = ({ navigation }) => {
             style={styles.gradient}
           >
             <Icon name="bank" size={20} color="#fff" style={styles.icon} />
-            <Text style={styles.optionText}>Fixed Deposit</Text>
+            <Text style={styles.optionText}>{jsonData.docs.FixedDeposit}</Text>
           </LinearGradient>
         </TouchableOpacity>
         <TouchableOpacity style={styles.option} onPress={() => handleDocumentClick('Loan Application')}>

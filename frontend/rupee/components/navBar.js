@@ -18,7 +18,7 @@ const BottomNavBar = () => {
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.iconContainer}
-        onPress={() => handlePress(null, 'home')}
+        onPress={() => navigation.navigate('Home')}
       >
         <Icon
           name="home-outline"
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingTop: 6,
     paddingBottom: 22,
-    backgroundColor: "#0B549D",
+    backgroundColor: "#002e4f",
     position: 'relative',
     borderTopRightRadius: 15,
     borderTopLeftRadius: 15,
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   scannerIcon: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#0B549D',
+    backgroundColor: '#002e4f',
     borderRadius: 50,
     padding: 10,
     elevation: 5,

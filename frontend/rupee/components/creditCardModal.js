@@ -14,17 +14,61 @@ const CardDetailsModal = ({ visible, onClose, card }) => {
           <Text style={styles.detailTitle}>Card Details</Text>
           {card && (
             <ScrollView style={styles.detailsContainer}>
-              <Text style={styles.detailLabel}>Card Number: {card.card_number}</Text>
-              <Text style={styles.detailLabel}>Cardholder Name: {card.cardholder_name}</Text>
-              <Text style={styles.detailLabel}>Expiration Date: {card.expiration_date}</Text>
-              <Text style={styles.detailLabel}>CVV: {card.cvv}</Text>
-              <Text style={styles.detailLabel}>Credit Limit: {card.credit_limit}</Text>
-              <Text style={styles.detailLabel}>Balance: {card.balance}</Text>
-              <Text style={styles.detailLabel}>Status: {card.status}</Text>
-              <Text style={styles.detailLabel}>Issued At: {card.issued_at}</Text>
-              <Text style={styles.detailLabel}>Billing Address: {card.billing_address}</Text>
-              <Text style={styles.detailLabel}>Reward Points: {card.reward_points}</Text>
-              <Text style={styles.detailLabel}>Interest Rate: {card.interest_rate}</Text>
+              <View style={styles.detailSection}>
+                <Text style={styles.detailLabel}>Card Number</Text>
+                <Text style={styles.detailValue}>{card.card_number}</Text>
+                <View style={styles.divider} />
+              </View>
+              <View style={styles.detailSection}>
+                <Text style={styles.detailLabel}>Cardholder Name</Text>
+                <Text style={styles.detailValue}>{card.cardholder_name}</Text>
+                <View style={styles.divider} />
+              </View>
+              <View style={styles.detailSection}>
+                <Text style={styles.detailLabel}>Expiration Date</Text>
+                <Text style={styles.detailValue}>{card.expiration_date}</Text>
+                <View style={styles.divider} />
+              </View>
+              <View style={styles.detailSection}>
+                <Text style={styles.detailLabel}>CVV</Text>
+                <Text style={styles.detailValue}>{card.cvv}</Text>
+                <View style={styles.divider} />
+              </View>
+              <View style={styles.detailSection}>
+                <Text style={styles.detailLabel}>Credit Limit</Text>
+                <Text style={styles.detailValue}>{card.credit_limit}</Text>
+                <View style={styles.divider} />
+              </View>
+              <View style={styles.detailSection}>
+                <Text style={styles.detailLabel}>Balance</Text>
+                <Text style={styles.detailValue}>{card.balance}</Text>
+                <View style={styles.divider} />
+              </View>
+              <View style={styles.detailSection}>
+                <Text style={styles.detailLabel}>Status</Text>
+                <Text style={styles.detailValue}>{card.status}</Text>
+                <View style={styles.divider} />
+              </View>
+              <View style={styles.detailSection}>
+                <Text style={styles.detailLabel}>Issued At</Text>
+                <Text style={styles.detailValue}>{card.issued_at}</Text>
+                <View style={styles.divider} />
+              </View>
+              <View style={styles.detailSection}>
+                <Text style={styles.detailLabel}>Billing Address</Text>
+                <Text style={styles.detailValue}>{card.billing_address}</Text>
+                <View style={styles.divider} />
+              </View>
+              <View style={styles.detailSection}>
+                <Text style={styles.detailLabel}>Reward Points</Text>
+                <Text style={styles.detailValue}>{card.reward_points}</Text>
+                <View style={styles.divider} />
+              </View>
+              <View style={styles.detailSection}>
+                <Text style={styles.detailLabel}>Interest Rate</Text>
+                <Text style={styles.detailValue}>{card.interest_rate}</Text>
+                <View style={styles.divider} />
+              </View>
             </ScrollView>
           )}
           <TouchableOpacity
@@ -42,9 +86,11 @@ const CardDetailsModal = ({ visible, onClose, card }) => {
 const styles = StyleSheet.create({
   detailsModalContainer: {
     flex: 1,
+    marginTop:70,
+    marginBottom:70,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+  
   },
   detailsModalContent: {
     width: '80%',
@@ -59,11 +105,27 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
+    color: '#003D7A',
+  },
+  detailSection: {
+    marginBottom: 10,
   },
   detailLabel: {
     fontSize: 16,
-    
+    fontWeight: 'bold',
+    color: '#003D7A',
+    marginBottom: 5,
+  },
+  detailValue: {
+    fontSize: 16,
+    color: '#555',
     marginBottom: 10,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#E0E0E0',
+    marginVertical: 10,
   },
   closeButton: {
     backgroundColor: '#003D7A',

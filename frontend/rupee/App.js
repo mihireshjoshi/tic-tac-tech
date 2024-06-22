@@ -16,16 +16,24 @@ import PayScreen from './pages/Pay_acc';
 import QRCodeScanner from './pages/BarCodeScanner';
 import ChatScreen from './pages/Chatbot';
 import SplashScreen from './pages/Opening';
+import UserProfile from './pages/UserProfile';
 
 export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Opening">
+
         <Stack.Screen
           name="Login"
           component={Login}
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="profile"
+          component={UserProfile}
+          options={{ headerShown: false }}
+        />
+
         <Stack.Screen
           name="ocr"
           component={OCR}

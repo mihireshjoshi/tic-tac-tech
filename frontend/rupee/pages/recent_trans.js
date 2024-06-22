@@ -1,20 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../supabaseee/supacreds';
 import TransactionBox from '../components/transaction_boxx';
 
 const RecentTransactions = ({ navigation }) => {
   const [transactions, setTransactions] = useState([]);
+  const [accountId, setAccountId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchTransactions();
+    getAccountId();
   }, []);
 
-  const fetchTransactions = async () => {
+  const getAccountId = async () => {
+    try {
+      const id = await AsyncStorage.getItem('account_id');
+      if (id !== null) {
+        setAccountId(id);
+        fetchTransactions(id);
+      }
+    } catch (error) {
+      console.error('Error fetching account ID:', error);
+    }
+  };
+
+  const fetchTransactions = async (id) => {
     const { data, error } = await supabase
       .from('transactions')
-      .select('*');
+      .select('*')
+      .or(`sender_account_id.eq.${id},receiver_account_id.eq.${id}`);
 
     if (error) {
       console.error('Error fetching transactions:', error);
@@ -22,16 +38,33 @@ const RecentTransactions = ({ navigation }) => {
       console.log('Fetched transactions:', data);
       setTransactions(data);
     }
+    setLoading(false);
   };
 
-  const renderItem = ({ item }) => (
-    <TransactionBox 
-      person={item.reciever_name} 
-      accountNum={item.acc_num} 
-      amount={item.amount} 
-      dateTime={item.timestamp} 
-    />
-  );
+  const renderItem = ({ item }) => {
+    const isSender = item.sender_account_id === accountId;
+    const isReceiver = item.receiver_account_id === accountId;
+    const amountStyle = isSender ? styles.amountRed : styles.amountGreen;
+    const sign = isSender ? '-' : '+';
+
+    return (
+      <TransactionBox 
+        person={item.reciever_name || 'N/A'} 
+        accountNum={item.reciever_account_id?.toString() || 'N/A'} 
+        amount={`${sign} $${item.amount?.toString() || 'N/A'}`} 
+        dateTime={item.timestamp ? new Date(item.timestamp).toString() : 'N/A'} 
+        amountStyle={amountStyle}
+      />
+    );
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -46,7 +79,7 @@ const RecentTransactions = ({ navigation }) => {
         <FlatList
           data={transactions}
           renderItem={renderItem}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={item => item.transactions_id}
         />
       )}
     </View>
@@ -74,10 +107,21 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
   },
+  amountRed: {
+    fontSize: 16,
+    color: 'red',
+    fontWeight: 'bold',
+  },
+  amountGreen: {
+    fontSize: 16,
+    color: 'green',
+    fontWeight: 'bold',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 export default RecentTransactions;
-
-
-
-// import { supabase } from '../supabaseee/supacreds';

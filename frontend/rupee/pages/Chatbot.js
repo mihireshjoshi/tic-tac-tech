@@ -4,6 +4,8 @@ import { Icon } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';  // Make sure to install expo-av if you haven't already
+import BottomNavBar from "../components/navBar";
+import HeaderComponent from "../components/header";
 
 
 // const loadLocalizedData = async () => {
@@ -194,6 +196,9 @@ const ChatScreen = () => {
   };
   
   return (
+    <View style={styles.outContainer}>
+      <HeaderComponent/>
+
     <KeyboardAvoidingView
       style={styles.containkeyboard}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -246,10 +251,17 @@ const ChatScreen = () => {
         </View>
       </View>
     </KeyboardAvoidingView>
+    <BottomNavBar/>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  outContainer:{
+    flex:1,
+    marginTop:25,
+
+  },
   containkeyboard:{
     flex: 1,
   },
@@ -339,7 +351,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 14,
     backgroundColor: "#E7ECEF",
-    marginTop: 40
+    
   },
   message: {
     padding: 10,

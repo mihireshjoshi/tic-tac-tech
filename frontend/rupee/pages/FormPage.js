@@ -139,9 +139,10 @@ const FormPage = ({ route, navigation }) => {
   };
 
   return (
-    <>
+    <View style = {styles.Page}>
       <HeaderComponent />
       <ScrollView contentContainerStyle={styles.container}>
+        
         <View style={styles.header}>
           <Text style={styles.formType}>{formType}</Text>
           <View style={styles.buttonContainer}>
@@ -186,11 +187,16 @@ const FormPage = ({ route, navigation }) => {
           </View>
         </Pressable>
       </Modal>
-    </>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  Page:{
+    flex : 1,
+    marginTop:30,
+
+  },
   container: {
     flexGrow: 1,
     padding: 20,
