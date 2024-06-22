@@ -53,14 +53,25 @@ def list_to_string(passages):
 def make_prompt(ques, knowledge):
     text = knowledge.replace("'", "").replace('"', '')  
     # print(f"\n\ntext:\n{text}")
-    prompt = f"""question: {ques}.\n
-    Information base or knowledge base: {text}\n
-    Act as a Cyber Security Expert and answer the question strictly based on the knowledge base by filtering the required information from the knowledge base\n
-    The Knowledge Base is of Cyber Laws of India. Generate a sophisticated and neat answer making it easy for the user to understand.\n
-    Take the user's concern seriously and provide a solution for the cyber issues. Make sure to provide the actual solution and not a reference for the solution. You have a knowledge base,search for an answer based on it.
-    It is highly possible that the question could be a problem in a real life scenario, make sure to give a logical solution to finance related problem.
-    Try to provide an explaination to your response.If the knowledge base does not have data related to the question, reply with "Sorry, the provided question is out of scope."
+    prompt = f"""You are a Cyber Security Expert specializing in Cyber Laws of India. Use the provided knowledge base to answer the following question:
+
+    Question: {ques}
+
+    Knowledge Base: {text}
+
+    Instructions:
+    - Answer the question strictly based on the provided knowledge base.
+    - Filter the required information from the knowledge base to generate a sophisticated and clear answer.
+    - Take the user's concern seriously and provide a practical solution to the cyber issue.
+    - Ensure the solution is actionable and not just a reference.
+    - If the question relates to finance, offer a logical solution.
+    - Provide an explanation for your response.
+    - The answer should be of a small length but should be given using logic
+    
+
+    Generate a comprehensive and user-friendly response.
     """
+
 
     gen_config = GenerationConfig(temperature=0.1)
     answer_text = model.generate_content(prompt, generation_config=gen_config)
@@ -73,6 +84,7 @@ async def chatbot_response(ques, db):
     for passage in passages:
         txt += passage
     cont = list_to_string(passages)
+    print(f"The Content is: \n{cont}\n\n")
     answer = make_prompt(ques, cont)
     return answer
 

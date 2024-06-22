@@ -9,6 +9,9 @@ import random
 import string
 from datetime import date, datetime
 
+from language import transcribe, translation
+from chatbot import ask_llm
+
 app = FastAPI()
 
 # Added Middleware
@@ -188,6 +191,33 @@ async def payment(request: Request):
     except Exception as e:
         print(e)
         return JSONResponse(content={"message": "Failed to pay", "success": False}, status_code=500)
+    
+
+@app.post("/chattext")
+async def chat_text(request: Request):
+    try: 
+        data = await request.json()
+        language = data['language']
+        auth_id = data['account_id']
+        question = data['question']
+
+        print(f"data is:\n{data}\n\n")
+
+        # ques = await translation(language, "English", question)
+        # question = ques['translated_content']
+
+        answer = await ask_llm(question)
+
+        # translated_answer = await translation("English", language, answer)
+        # answer = translated_answer['translated_content']
+
+        return JSONResponse(content={"message": answer, "success": True}, status_code=200)
+    
+    except Exception as e:
+        return JSONResponse(content={"message": "Answer Not Found Error", "success": False}, status_code=500)
+
+
+
 
 
 if __name__ == "__main__":

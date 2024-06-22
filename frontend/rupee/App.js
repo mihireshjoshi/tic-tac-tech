@@ -14,6 +14,7 @@ import FormPage from './pages/FormPage';
 import QRScannerComponent from './pages/QrScanner';
 import PayScreen from './pages/Pay_acc';
 import QRCodeScanner from './pages/BarCodeScanner';
+import ChatScreen from './pages/Chatbot';
 
 export default function App() {
   return (
@@ -57,6 +58,11 @@ export default function App() {
         <Stack.Screen
           name="Scanner"
           component={QRCodeScanner}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Chatbot"
+          component={ChatScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
