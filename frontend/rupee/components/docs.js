@@ -1,71 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import * as ImagePicker from 'expo-image-picker';
 
 const Documents = ({ navigation }) => {
-  const [selectedFormType, setSelectedFormType] = useState(null);
-
   const handleDocumentClick = (formType) => {
-    setSelectedFormType(formType);
-    Alert.alert(
-      'Add Image',
-      'Choose an option',
-      [
-        { text: 'Camera', onPress: openCamera },
-        { text: 'Gallery', onPress: openGallery },
-        { text: 'Cancel', style: 'cancel' },
-      ],
-      { cancelable: true }
-    );
-  };
-
-  const openCamera = async () => {
-    try {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== 'granted') {
-        alert('Sorry, we need camera permissions to make this work!');
-        return;
-      }
-
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
-
-      if (!result.canceled) {
-        navigation.navigate('FormPage', { formType: selectedFormType, imageUri: result.assets[0].uri });
-      }
-    } catch (error) {
-      console.error("Error opening camera: ", error);
-      alert('An error occurred while opening the camera.');
-    }
-  };
-
-  const openGallery = async () => {
-    try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        alert('Sorry, we need media library permissions to make this work!');
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
-
-      if (!result.canceled) {
-        navigation.navigate('FormPage', { formType: selectedFormType, imageUri: result.assets[0].uri });
-      }
-    } catch (error) {
-      console.error("Error opening gallery: ", error);
-      alert('An error occurred while opening the gallery.');
-    }
+    navigation.navigate('FormPage', { formType });
   };
 
   return (

@@ -1,18 +1,19 @@
-// CardCarousel.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, FlatList, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, FlatList, Alert, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../supabaseee/supacreds';
 import Icon from 'react-native-vector-icons/AntDesign';
 import CardFormModal from './CardFormModal';
+import CardDetailsModal from './creditCardModal';
+
 const { width } = Dimensions.get('window');
 const cardWidth = width - 40;
 
-const CardCarousel = ({ onSelectCard }) => {
-  console.log("onSelectCard prop: ", onSelectCard); // Add this line
-
+const CardCarousel = () => {
   const [cards, setCards] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [detailsModalVisible, setDetailsModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchCards = async () => {
@@ -33,6 +34,22 @@ const CardCarousel = ({ onSelectCard }) => {
     fetchCards();
   }, []);
 
+  const handleCardClick = async (card) => {
+    const { data, error } = await supabase
+      .from('credit_cards')
+      .select('*')
+      .eq('account_id', card.account_id)
+      .eq('card_number', card.card_number)
+      .single();
+
+    if (error) {
+      Alert.alert('Error', error.message);
+    } else {
+      setSelectedCard(data);
+      setDetailsModalVisible(true);
+    }
+  };
+
   const handleAddCard = (newCard) => {
     const newCardWithId = { ...newCard, id: cards.length.toString() };
     setCards([...cards, newCardWithId]);
@@ -40,7 +57,7 @@ const CardCarousel = ({ onSelectCard }) => {
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => onSelectCard(item)}>
+    <TouchableOpacity onPress={() => handleCardClick(item)}>
       <View style={item.id === 'add-card' ? styles.addCard : styles.card}>
         {item.id === 'add-card' ? (
           <TouchableOpacity style={styles.addCardContent} onPress={() => setModalVisible(true)}>
@@ -49,6 +66,7 @@ const CardCarousel = ({ onSelectCard }) => {
           </TouchableOpacity>
         ) : (
           <>
+            <Image source={require('../assets/lamp.png')} style={styles.logo} />
             <Text style={styles.cardNumber}>{item.card_number}</Text>
             <View style={styles.cardBottom}>
               <View style={styles.cardHolderContainer}>
@@ -87,6 +105,11 @@ const CardCarousel = ({ onSelectCard }) => {
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         onSubmit={handleAddCard}
+      />
+      <CardDetailsModal
+        visible={detailsModalVisible}
+        onClose={() => setDetailsModalVisible(false)}
+        card={selectedCard}
       />
     </View>
   );
@@ -133,20 +156,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
   },
+  logo: {
+    position: 'absolute',
+    top: 10,
+    right: 15,
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+  },
   cardTitle: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: 'bold',
     marginBottom: 10,
   },
   cardLabel: {
     color: '#9F9F9F',
-    fontSize: 10,
+    fontSize: 8,
     textTransform: 'uppercase',
   },
   cardNumber: {
     color: '#fff',
-    fontSize: 32,
+    fontSize: 16,
     fontWeight: '600',
     letterSpacing: 3,
     textAlign: 'left',
@@ -171,7 +202,7 @@ const styles = StyleSheet.create({
   },
   cardDetail: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 13,
     marginTop: 5,
   },
   addCardText: {
