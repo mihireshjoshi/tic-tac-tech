@@ -326,63 +326,53 @@ async def chat_text(request: Request):
 
 
 
+
+# @app.post("/ocr_json")
+# async def process_ocr(files: List[UploadFile] = File(...)):
+#     try:
+#         if not files:
+#             raise HTTPException(status_code=400, detail="No files uploaded")
+
+#         all_responses = []
+#         for file in files:
+#             # Log file information
+#             print(f"Processing file: {file.filename}")
+#             contents = await file.read()
+#             file_path = os.path.join(CAPTURE_DIR, file.filename)
+            
+#             with open(file_path, "wb") as f:
+#                 f.write(contents)
+            
+#             response = capture(file_path)
+#             all_responses.append(response)
+        
+#         return {'message': all_responses}
+#     except json.JSONDecodeError as e:
+#         print(f"JSON decoding error: {e}")
+#         raise HTTPException(status_code=400, detail=f"JSON decoding error: {e}")
+#     except Exception as e:
+#         print(f"Unexpected error: {e}")
+#         raise HTTPException(status_code=500, detail=str(e))
     
 
-# def capture(image_file):
-    # all_json_data = []
-    # with Image.open(image_file) as img:
-    #     with BytesIO() as buffer:
-    #         ext = os.path.splitext(image_file)[1].lower()
-    #         if ext == '.jpg' or ext == '.jpeg':
-    #             img_format = 'JPEG'
-    #         elif ext == '.png':
-    #             img_format = 'PNG'
-    #         else:
-    #             raise ValueError("Unsupported image format")
-            
-    #         img.save(buffer, format=img_format)
-    #         image_bytes = buffer.getvalue()
-    #         model = genai.GenerativeModel("gemini-pro-vision")
-    #         response = model.generate_content(glm.Content(parts=[glm.Part(text='The Images is a banking form. From the form, return a json which will contain the form value asked along with an example for it.Replace spaces with _ . For example, the form has a option of first name , account number, last name ,phone number. It should a json like {"first_name":"John","account_number":42132123,"last_name":"Doe","phone_number":9192939472}]. Remember that this is just an example and if you encounter with this example, dont limit yourself to generate the above json. If you do not encounter any of the json example pairs, use your own understanding and logic to create the json. '), glm.Part(inline_data=glm.Blob(mime_type='image/jpeg', data=image_bytes))]))
-    #         result = response.text
-            
-    #         # Extract JSON-like strings from the result
-    #         json_objects = re.findall(r'{.*?}', result, re.DOTALL)
-    #         json_data = [json.loads(obj) for obj in json_objects]
-    #         all_json_data.extend(json_data)
-    # return all_json_data
-
-@app.post("/ocr_json")
+@app.post("/process_ocr")
 async def process_ocr(files: List[UploadFile] = File(...)):
     try:
-        if not files:
-            raise HTTPException(status_code=400, detail="No files uploaded")
-
         all_responses = []
         for file in files:
-            # Log file information
-            print(f"Processing file: {file.filename}")
             contents = await file.read()
             file_path = os.path.join(CAPTURE_DIR, file.filename)
-            
+            print(f"\n\nProcessing for {file.filename}\n")
             with open(file_path, "wb") as f:
                 f.write(contents)
             
-            response = capture(file_path)
+            response = capture([file_path])
+            print(f"\n\nResponse is :\n{response}")
             all_responses.append(response)
-        
+            print(f"\n\nAll responses:\n{all_responses}\n\n")
         return {'message': all_responses}
-    except json.JSONDecodeError as e:
-        print(f"JSON decoding error: {e}")
-        raise HTTPException(status_code=400, detail=f"JSON decoding error: {e}")
     except Exception as e:
-        print(f"Unexpected error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-
-
-
-# @app.post("/ocr_steps")
-
 
 
 class DeleteUserRequest(BaseModel):
@@ -404,6 +394,9 @@ async def delete_user(delete_user_request: DeleteUserRequest):
             raise HTTPException(status_code=400, detail=f"Error deleting user: {response}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+# @app.route("/in")
 
 
 if __name__ == "__main__":

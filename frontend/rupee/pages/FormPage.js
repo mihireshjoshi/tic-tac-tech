@@ -1,12 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert, Animated, ActivityIndicator, Modal, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
-
-import LoanApplicationForm from '../components/LoanApplicationForm';
-import CreditCardApplicationForm from '../components/CreditCardApplicationForm';
-import FixedDepositForm from '../components/FixedDepositForm';
 
 import HeaderComponent from '../components/header';
 import BottomNavBar from '../components/navBar';
@@ -14,6 +10,11 @@ import BottomNavBar from '../components/navBar';
 const FormPage = ({ route, navigation }) => {
   const { formType = 'Loan Application' } = route.params || {};
   const [images, setImages] = useState([]);
+  const [ocrData, setOcrData] = useState(null);
+  const fadeAnim = useState(new Animated.Value(0))[0];
+  const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const handleAddImage = () => {
     Alert.alert(
@@ -66,40 +67,75 @@ const FormPage = ({ route, navigation }) => {
   };
 
   const handleScan = async () => {
-      const formData = new FormData();
-      images.forEach((image, index) => {
-        formData.append('files', {
-          uri: image.uri,
-          name: `photo${index}.jpg`,
-          type: 'image/jpeg',
-        });
+    setLoading(true);  // Show loading indicator
+    const formData = new FormData();
+    images.forEach((image, index) => {
+      formData.append('files', {
+        uri: image.uri,
+        name: `photo${index}.jpg`,
+        type: 'image/jpeg',
       });
+    });
 
-      try {
-        const response = await axios.post('http://10.20.2.79:8000/ocr_json', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        console.log('Upload success', response.data.message);
-        Alert.alert('Scan Result', JSON.stringify(response.data.message));
-      } catch (error) {
-        console.error('Error scanning images:', error);
-        Alert.alert('Error', 'Failed to scan images.');
-      }
+    try {
+      const response = await axios.post('http://10.20.2.79:8000/process_ocr', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setOcrData(response.data.message);
+      setLoading(false);  // Hide loading indicator
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }).start();
+      Alert.alert('Scan Result', 'OCR data received successfully');
+    } catch (error) {
+      console.error('Error scanning images:', error);
+      setLoading(false);  // Hide loading indicator
+      Alert.alert('Error', 'Failed to scan images.');
+    }
   };
 
-  const renderForm = () => {
-    switch (formType) {
-      case 'Loan Application':
-        return <LoanApplicationForm />;
-      case 'Fixed Deposit':
-        return <FixedDepositForm />;
-      case 'Credit Card Application':
-        return <CreditCardApplicationForm />;
-      default:
-        return null;
-    }
+  const openModal = (image) => {
+    setSelectedImage(image);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedImage(null);
+  };
+
+  const renderOcrData = () => {
+    if (!ocrData) return null;
+
+    return ocrData.map((pageData, pageIndex) => {
+      const [instructions, data] = pageData;
+
+      return (
+        <Animated.View key={pageIndex} style={[styles.pageContainer, { opacity: fadeAnim }]}>
+          <View style={styles.dataContainer}>
+            {data.map((item, index) => (
+              <View key={index} style={styles.itemContainer}>
+                {Object.entries(item).map(([label, value]) => (
+                  <View key={label} style={styles.labelValueContainer}>
+                    <Text style={styles.label}>{label.replace(/_/g, ' ')}</Text>
+                    <Text style={styles.value}>{value}</Text>
+                  </View>
+                ))}
+              </View>
+            ))}
+          </View>
+          <View style={styles.instructionsContainer}>
+            {instructions.map((instruction, index) => (
+              <Text key={index} style={styles.instruction}>{instruction}</Text>
+            ))}
+          </View>
+        </Animated.View>
+      );
+    });
   };
 
   return (
@@ -119,17 +155,37 @@ const FormPage = ({ route, navigation }) => {
         </View>
         <ScrollView horizontal style={styles.imageList}>
           {images.map((image, index) => (
-            <Image key={index} source={{ uri: image.uri }} style={styles.imagePreview} />
+            <TouchableOpacity key={index} onPress={() => openModal(image)}>
+              <Image source={{ uri: image.uri }} style={styles.imagePreview} />
+            </TouchableOpacity>
           ))}
           <TouchableOpacity style={styles.addButton} onPress={handleAddImage}>
             <Icon name="plus" size={30} color="#0B549D" />
           </TouchableOpacity>
         </ScrollView>
+        {loading && (
+          <ActivityIndicator size="large" color="#3B82F6" />
+        )}
         <View style={styles.formContainer}>
-          {renderForm()}
+          {renderOcrData()}
         </View>
       </ScrollView>
       <BottomNavBar />
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <Pressable style={styles.modalBackground} onPress={closeModal}>
+          <View style={styles.modalContent}>
+            {selectedImage && (
+              <Image source={{ uri: selectedImage.uri }} style={styles.fullImage} />
+            )}
+          </View>
+        </Pressable>
+      </Modal>
     </>
   );
 };
@@ -138,28 +194,35 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#f3f3f3',
+    backgroundColor: '#f9f9f9',
   },
   header: {
     marginBottom: 20,
   },
   formType: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
+    color: '#3B82F6',
     marginBottom: 10,
+    textAlign: 'center',
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
     marginBottom: 20,
   },
   button: {
     backgroundColor: '#3B82F6',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
     borderRadius: 25,
     alignItems: 'center',
     marginHorizontal: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
   },
   buttonText: {
     color: '#fff',
@@ -174,6 +237,8 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 10,
     marginRight: 10,
+    borderWidth: 2,
+    borderColor: '#3B82F6',
   },
   addButton: {
     justifyContent: 'center',
@@ -189,9 +254,78 @@ const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     backgroundColor: '#fff',
-    borderRadius: 10,
+    borderRadius: 15,
     padding: 20,
     marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
+  },
+  pageContainer: {
+    marginBottom: 20,
+  },
+  dataContainer: {
+    marginBottom: 20,
+  },
+  itemContainer: {
+    marginBottom: 10,
+    backgroundColor: '#e8f0fe',
+    padding: 15,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
+  },
+  labelValueContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+  },
+  label: {
+    fontWeight: 'bold',
+    color: '#3B82F6',
+  },
+  value: {
+    color: '#555',
+  },
+  instructionsContainer: {
+    padding: 20,
+    backgroundColor: '#f0f8ff',
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
+  },
+  instruction: {
+    color: '#333',
+    marginBottom: 10,
+    fontSize: 16,
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fullImage: {
+    width: 300,
+    height: 400,
+    borderRadius: 10,
   },
 });
 
