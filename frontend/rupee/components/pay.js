@@ -20,7 +20,7 @@ const PaymentOptions = () => {
         </TouchableOpacity>
         <View style={styles.divider} />
         <TouchableOpacity style={styles.option}>
-          <Icon name="qrcode" size={28} color="#0B549D" />
+          <Icon name="qrcode" size={28} color="#0B549D" onPress={() => navigation.navigate('Scanner')} />
           <Text style={styles.optionText}>QR</Text>
         </TouchableOpacity>
       </View>

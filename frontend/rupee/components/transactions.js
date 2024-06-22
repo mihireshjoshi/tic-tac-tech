@@ -1,14 +1,50 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from '../supabaseee/supacreds'; // Adjust the path as needed
 
 const TransComponent = ({ navigation }) => {
+  const [accountId, setAccountId] = useState('');
+  const [balance, setBalance] = useState('');
+
+  useEffect(() => {
+    const fetchAccountIdAndBalance = async () => {
+      try {
+        const accountId = await AsyncStorage.getItem('account_id');
+        if (!accountId) {
+          Alert.alert('Error', 'No account ID found');
+          return;
+        }
+
+        setAccountId(accountId);
+
+        const { data, error } = await supabase
+          .from('users_b') // Replace 'users_b' with your actual table name
+          .select('balance')
+          .eq('account_id', accountId)
+          .single();
+
+        if (error) {
+          Alert.alert('Error fetching balance', error.message);
+        } else {
+          setBalance(data.balance);
+        }
+      } catch (error) {
+        console.error('Error fetching account ID or balance:', error);
+        Alert.alert('Error', 'Failed to fetch account ID or balance');
+      }
+    };
+
+    fetchAccountIdAndBalance();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.label}>Account number</Text>
-        <Text style={styles.accountNumber}>1234 5678 1234</Text>
+        <Text style={styles.label}>Account ID</Text>
+        <Text style={styles.accountNumber}>{accountId}</Text>
         <Text style={styles.balanceLabel}>Available Balance</Text>
-        <Text style={styles.balance}>$ XXX, XXX. XX</Text>
+        <Text style={styles.balance}>{balance ? `$ ${balance}` : 'Loading...'}</Text>
         
         <TouchableOpacity 
           style={styles.button} 
@@ -58,8 +94,8 @@ const styles = StyleSheet.create({
     right: 10,
     padding: 10,
     borderRadius: 10,
-    borderColor:"#FFFFFF",
-    borderWidth:1,
+    borderColor: "#FFFFFF",
+    borderWidth: 1,
   },
   buttonText: {
     color: '#FFFFFF',
@@ -67,4 +103,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default  TransComponent;
+export default TransComponent;

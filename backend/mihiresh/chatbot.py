@@ -89,7 +89,7 @@ async def chatbot_response(ques, db):
     return answer
 
 async def ask_llm(query: str):
-    db_path = "/Users/mihiresh/Desktop/kleos/tic-tac-tech/backend/mihiresh/database"
+    db_path = "database"
     db_name = "cyber_fraud_kleos"
     db = get_chroma_db(db_name, db_path)
     answer = await chatbot_response(query, db)
