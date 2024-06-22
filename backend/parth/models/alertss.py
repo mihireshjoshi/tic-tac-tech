@@ -14,12 +14,11 @@ import joblib
 
 
 app = FastAPI()
-account_sid = "ACfe925c2d5e8a9a4b408b1b23842bd745"
-auth_token = "807e948fc68a38798a7faf1e6c6ac349"
+
 client = Client(account_sid, auth_token)
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from parth.models.testing_model import predicting
+from models.testing_model import predicting
 from backend.mihiresh.language import translation,transcribe
 # async def twilio_message(from_number,to_number):
 #     message = client.messages.create(
@@ -36,7 +35,7 @@ def send_otp(phone_number, otp):
     )
     return message.sid
 
-model = joblib.load('tic-tac-tech/backend/parth/models/xgb_model.pkl')
+model = joblib.load('xgb_model.pkl')
 
 otp_storage = {}
 

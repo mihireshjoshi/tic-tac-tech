@@ -36,9 +36,9 @@ def capture(image_files):
                 img.save(buffer, format=img_format)
                 image_bytes = buffer.getvalue()
                 
-                model = genai.GenerativeModel("gemini-pro-vision")
-                response1 = model.generate_content(glm.Content(parts=[
-                    glm.Part(text='The image is a banking form. Provide a response with an extremely concise, step-by-step guidance on filling each parameter in the form. Each step should cover only one parameter. Ensure the number of steps equals the number of parameters. Return a list of strings in this format ["Step 1: Description of how to fill the first parameter","Step 2: Description of how to fill the second parameter "]. Do not repeat "Step" in the description. Do not print * to highlight points and if generated replace it with a special character.'),
+                model1 = genai.GenerativeModel("gemini-pro-vision")
+                response1 = model1.generate_content(glm.Content(parts=[
+                    glm.Part(text='The image is a banking form. Provide a response with an extremely concise, step-by-step guidance on filling each parameter in the form. Each step should cover only one parameter. Ensure the number of steps equals the number of parameters. Return a list of strings in this format ["Step 1: Description of how to fill the first parameter","Step 2: Description of how to fill the second parameter "]. Do not repeat "Step" in the description. Do not generate * and if generated replace it with a special character.'),
                     glm.Part(inline_data=glm.Blob(mime_type=mime_type, data=image_bytes)) 
                 ]))
                 
@@ -48,8 +48,8 @@ def capture(image_files):
                     all_steps.extend(steps)
                 else:
                     print("No valid parts found in response or response was blocked.")
-                
-                response2 = model.generate_content(glm.Content(parts=[
+                model2 = genai.GenerativeModel("gemini-pro-vision")
+                response2 = model2.generate_content(glm.Content(parts=[
                     glm.Part(text='The Images is a banking form. From the form, return a json which will contain the form value asked along with an example for it.Replace spaces with _ . For example, the form has a option of first name , account number, last name ,phone number. It should a json like {"first_name":"John","account_number":42132123,"last_name":"Doe","phone_number":9192939472}]. Remember that this is just an example and if you encounter with this example, dont limit yourself to generate the above json. If you do not encounter any of the json example pairs, use your own understanding and logic to create the json.'),
                     glm.Part(inline_data=glm.Blob(mime_type=mime_type, data=image_bytes))
                 ]))
