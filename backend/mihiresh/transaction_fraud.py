@@ -127,9 +127,9 @@ def predicting(sender_account_id, transaction_id):
 app = FastAPI()
 
 # Twilio credentials and client initialization
-# account_sid = "ACd312d44acc6ebbb6497de64c84d84167"
-# auth_token = "4ead3131c9fdb70117d41468feaec413"
-# twilio_client = TwilioClient(account_sid, auth_token)
+account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+twilio_client = TwilioClient(account_sid, auth_token)
 
 # Function to send OTP via Twilio
 def send_otp(phone_number, otp):
