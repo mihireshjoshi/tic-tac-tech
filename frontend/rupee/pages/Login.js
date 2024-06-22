@@ -14,7 +14,7 @@ const Login = ({ navigation }) => {
     };
     console.log('Payload: ', payload);
     try {
-      const response = await fetch('http://10.20.2.124:8000/login', {
+      const response = await fetch('http://10.20.2.79:8000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
