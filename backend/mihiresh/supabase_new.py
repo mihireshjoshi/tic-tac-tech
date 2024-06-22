@@ -177,6 +177,17 @@ async def add_card(
     except Exception as e:
         print(f"\n\nError in Adding a Card:\n{e}")
         return JSONResponse(content={"message": "Failed to add card", "success": False}, status_code=False)
+    
+
+@app.post("/payment")
+async def payment(request: Request):
+    try:
+        #Implement the fraud detection logic here
+
+        return JSONResponse(content={"message": "Successfully done", "success": True}, status_code=200)
+    except Exception as e:
+        print(e)
+        return JSONResponse(content={"message": "Failed to pay", "success": False}, status_code=500)
 
 
 if __name__ == "__main__":

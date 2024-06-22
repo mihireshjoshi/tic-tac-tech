@@ -13,6 +13,7 @@ import OCR from './pages/OCR';
 import FormPage from './pages/FormPage';
 import QRScannerComponent from './pages/QrScanner';
 import PayScreen from './pages/Pay_acc';
+import QRCodeScanner from './pages/BarCodeScanner';
 
 export default function App() {
   return (
@@ -51,6 +52,11 @@ export default function App() {
         <Stack.Screen
           name="RecentTransacs"
           component={RecentTransactions}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Scanner"
+          component={QRCodeScanner}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

@@ -7,11 +7,6 @@ import { useNavigation } from '@react-navigation/native';
 const BottomNavBar = () => {
   const navigation = useNavigation();
 
-//   const handleQr = async () => {
-//     navigation.navigate{'QRpage'}
-
-//   }
-
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.iconContainer} onPress={() => console.log('home')}>
@@ -20,7 +15,7 @@ const BottomNavBar = () => {
       <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('Chatbot')}>
         <Icon name="chatbubble-outline" size={24} color="#fff" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('qrscan')}>
+      <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('Scanner')}>
         <Icon name="qr-code-outline" size={24} color="#fff" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconContainer} onPress={() => console.log('Card pressed')}>
