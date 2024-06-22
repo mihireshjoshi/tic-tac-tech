@@ -70,7 +70,8 @@ const ChatScreen = () => {
 
   const sendMessage = async () => {
     if (messageText.trim()) {
-        const language = "English"
+        const language = await AsyncStorage.getItem("language")
+        console.log(">>>>>>",language);
         const account_id = await AsyncStorage.getItem("account_id")
         console.log("Account ID is : ", account_id);
         const newMessage = { id: Date.now(), text: messageText, sender: 'user', language: language };
@@ -338,6 +339,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 14,
     backgroundColor: "#E7ECEF",
+    marginTop: 40
   },
   message: {
     padding: 10,

@@ -10,8 +10,8 @@ from io import BytesIO
 
 app = FastAPI()
 
-IMAGE_DIR = "D:/Competitions/TicTacTech/tic-tac-tech/backend/parth/images"  
-CAPTURE_DIR = "D:/Competitions/TicTacTech/tic-tac-tech/backend/parth/captures"  
+IMAGE_DIR = "/Users/mihiresh/Desktop/kleos/tic-tac-tech/backend/parth/images"  
+CAPTURE_DIR = "/Users/mihiresh/Desktop/kleos/tic-tac-tech/backend/parth/captures"  
 
 API_KEY = "AIzaSyApEBnz_XHwaeDUrBgYL31wq4yN6RcyiJA"
 genai.configure(api_key=API_KEY)
@@ -31,8 +31,13 @@ def capture(image_file):
             img.save(buffer, format=img_format)
             image_bytes = buffer.getvalue()
             model = genai.GenerativeModel("gemini-pro-vision")
-            response = model.generate_content(glm.Content(parts=[glm.Part(text='The Images is a banking form. From the form, return a json which will contain the form value asked along with an example for it.Replace spaces with _ . For example, the form has a option of first name , account number, last name ,phone number. It should a json like {'first_name':'John','account_number':42132123,'last_name':'Doe','phone_number':9192939472}]. Remember that this is just an example and if you encounter with this example, dont limit yourself to generate the above json. If you do not encounter any of the json example pairs, use your own understanding and logic to create the json. '), glm.Part(inline_data=glm.Blob(mime_type='image/jpeg', data=image_bytes))]))
+            response = model.generate_content(glm.Content(parts=[glm.Part(text='The Images is a banking form. From the form, return a json which will contain the form value asked along with an example for it.Replace spaces with _ . For example, the form has a option of first name , account number, last name ,phone number. It should a json like {"first_name":"John","account_number":42132123,"last_name":"Doe","phone_number":9192939472}]. Remember that this is just an example and if you encounter with this example, dont limit yourself to generate the above json. If you do not encounter any of the json example pairs, use your own understanding and logic to create the json. '), glm.Part(inline_data=glm.Blob(mime_type='image/jpeg', data=image_bytes))]))
             result = response.text
+            
+            # Print the result for debugging purposes
+            print(result)
+            
+            # Extract JSON-like strings from the result
             json_objects = re.findall(r'{.*?}', result, re.DOTALL)
             json_data = [json.loads(obj) for obj in json_objects]
             all_json_data.extend(json_data)
@@ -56,6 +61,8 @@ async def process_ocr(file: UploadFile = File(...)):
             f.write(contents)
         
         response = capture(file_path)
-        return {'message':f"{response}"}
+        return {'message': response}
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=400, detail=f"JSON decoding error: {e}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

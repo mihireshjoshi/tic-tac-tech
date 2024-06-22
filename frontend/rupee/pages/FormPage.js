@@ -38,7 +38,7 @@ const FormPage = ({ route, navigation }) => {
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [3, 5],
       quality: 1,
     });
 
@@ -66,27 +66,27 @@ const FormPage = ({ route, navigation }) => {
   };
 
   const handleScan = async () => {
-    const formData = new FormData();
-    images.forEach((image, index) => {
-      formData.append('files', {
-        uri: image.uri,
-        name: `photo${index}.jpg`,
-        type: 'image/jpeg',
+      const formData = new FormData();
+      images.forEach((image, index) => {
+        formData.append('files', {
+          uri: image.uri,
+          name: `photo${index}.jpg`,
+          type: 'image/jpeg',
+        });
       });
-    });
 
-    try {
-      const response = await axios.post('http://10.20.2.124:8001/scan', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      console.log('Upload success', response.data);
-      Alert.alert('Scan Result', response.data.message);
-    } catch (error) {
-      console.error('Error scanning images:', error);
-      Alert.alert('Error', 'Failed to scan images.');
-    }
+      try {
+        const response = await axios.post('http://10.20.2.79:8000/ocr_json', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        console.log('Upload success', response.data.message);
+        Alert.alert('Scan Result', JSON.stringify(response.data.message));
+      } catch (error) {
+        console.error('Error scanning images:', error);
+        Alert.alert('Error', 'Failed to scan images.');
+      }
   };
 
   const renderForm = () => {

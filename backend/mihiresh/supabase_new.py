@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
@@ -8,11 +8,24 @@ import uvicorn
 import random
 import string
 from datetime import date, datetime
+from typing import List
+import shutil
+import json
+from PIL import Image
+import google.generativeai as genai
+import google.ai.generativelanguage as glm
+from io import BytesIO
+import re
 
 from language import transcribe, translation
 from chatbot import ask_llm
+from capture import capture
 
 app = FastAPI()
+
+
+API_KEY = "AIzaSyApEBnz_XHwaeDUrBgYL31wq4yN6RcyiJA"
+genai.configure(api_key=API_KEY)
 
 # Added Middleware
 app.add_middleware(
@@ -26,6 +39,10 @@ app.add_middleware(
 load_dotenv()
 supabase_api = os.getenv("SUPABASE_API_KEY")
 supabase_url = os.getenv("SUPABASE_URL")
+
+IMAGE_DIR = "/Users/mihiresh/Desktop/kleos/tic-tac-tech/backend/mihiresh/images"  
+CAPTURE_DIR = "/Users/mihiresh/Desktop/kleos/tic-tac-tech/backend/mihiresh/captures"  
+
 
 supabase: Client = create_client(supabase_url=supabase_url, supabase_key=supabase_api)
 
@@ -203,19 +220,77 @@ async def chat_text(request: Request):
 
         print(f"data is:\n{data}\n\n")
 
-        # ques = await translation(language, "English", question)
-        # question = ques['translated_content']
+        ques = await translation(language, "English", question)
+        question = ques['translated_content']
 
         answer = await ask_llm(question)
 
-        # translated_answer = await translation("English", language, answer)
-        # answer = translated_answer['translated_content']
+        translated_answer = await translation("English", language, answer)
+        answer = translated_answer['translated_content']
 
         return JSONResponse(content={"message": answer, "success": True}, status_code=200)
     
     except Exception as e:
         return JSONResponse(content={"message": "Answer Not Found Error", "success": False}, status_code=500)
 
+
+
+    
+
+# def capture(image_file):
+    # all_json_data = []
+    # with Image.open(image_file) as img:
+    #     with BytesIO() as buffer:
+    #         ext = os.path.splitext(image_file)[1].lower()
+    #         if ext == '.jpg' or ext == '.jpeg':
+    #             img_format = 'JPEG'
+    #         elif ext == '.png':
+    #             img_format = 'PNG'
+    #         else:
+    #             raise ValueError("Unsupported image format")
+            
+    #         img.save(buffer, format=img_format)
+    #         image_bytes = buffer.getvalue()
+    #         model = genai.GenerativeModel("gemini-pro-vision")
+    #         response = model.generate_content(glm.Content(parts=[glm.Part(text='The Images is a banking form. From the form, return a json which will contain the form value asked along with an example for it.Replace spaces with _ . For example, the form has a option of first name , account number, last name ,phone number. It should a json like {"first_name":"John","account_number":42132123,"last_name":"Doe","phone_number":9192939472}]. Remember that this is just an example and if you encounter with this example, dont limit yourself to generate the above json. If you do not encounter any of the json example pairs, use your own understanding and logic to create the json. '), glm.Part(inline_data=glm.Blob(mime_type='image/jpeg', data=image_bytes))]))
+    #         result = response.text
+            
+    #         # Extract JSON-like strings from the result
+    #         json_objects = re.findall(r'{.*?}', result, re.DOTALL)
+    #         json_data = [json.loads(obj) for obj in json_objects]
+    #         all_json_data.extend(json_data)
+    # return all_json_data
+
+@app.post("/ocr_json")
+async def process_ocr(files: List[UploadFile] = File(...)):
+    try:
+        if not files:
+            raise HTTPException(status_code=400, detail="No files uploaded")
+
+        all_responses = []
+        for file in files:
+            # Log file information
+            print(f"Processing file: {file.filename}")
+            contents = await file.read()
+            file_path = os.path.join(CAPTURE_DIR, file.filename)
+            
+            with open(file_path, "wb") as f:
+                f.write(contents)
+            
+            response = capture(file_path)
+            all_responses.append(response)
+        
+        return {'message': all_responses}
+    except json.JSONDecodeError as e:
+        print(f"JSON decoding error: {e}")
+        raise HTTPException(status_code=400, detail=f"JSON decoding error: {e}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+# @app.post("/ocr_steps")
 
 
 

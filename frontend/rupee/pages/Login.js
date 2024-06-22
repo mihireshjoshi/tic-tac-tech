@@ -31,17 +31,21 @@ const Login = ({ navigation }) => {
         // Fetch account_id from Supabase
         const { data, error } = await supabase
           .from('users_b')
-          .select('account_id')
+          .select('account_id, language')
           .eq('auth_id', jsonResponse.auth_id)
           .single();
-
+        
+        console.log(">>>>>>", data)
         if (error) {
           Alert.alert('Error fetching account_id', error.message);
         } else {
           await AsyncStorage.setItem('account_id', data.account_id);
+          await AsyncStorage.setItem('language', data.language);
           console.log('Account ID stored!!');
           navigation.navigate('Home');
         }
+
+
       } else {
         Alert.alert('Login failed', jsonResponse.message);
       }
