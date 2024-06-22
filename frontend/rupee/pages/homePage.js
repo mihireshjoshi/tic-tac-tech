@@ -21,7 +21,7 @@ export default function Home({ navigation }) {
           <TransComponent navigation={navigation} />
           <PaymentOptions />
           <Invests />
-          <Documents />
+          <Documents navigation={navigation} />
         </ScrollView>
       </SafeAreaView>
       <BottomNavBar style={styles.nav} />

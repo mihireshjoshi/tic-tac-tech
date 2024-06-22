@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 
@@ -13,22 +13,15 @@ const PaymentOptions = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Make Payment</Text>
-      <View style={styles.optionsContainer}>
+      <View style={styles.optionPill}>
+        <TouchableOpacity style={[styles.option, styles.leftOption]} onPress={navigateToPayAcc}>
+          <Icon name="user" size={28} color="#0B549D" />
+          <Text style={styles.optionText}>Account</Text>
+        </TouchableOpacity>
+        <View style={styles.divider} />
         <TouchableOpacity style={styles.option}>
-          <Icon name="qrcode" size={40} color="#0B549D" />
+          <Icon name="qrcode" size={28} color="#0B549D" />
           <Text style={styles.optionText}>QR</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option} onPress={navigateToPayAcc}>
-          <Icon name="user" size={40} color="#0B549D" />
-          <Text style={styles.optionText}>account</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option}>
-          <Image source={require('../assets/upi.png')} style={styles.icon} />
-          <Text style={styles.optionText}>upi</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option}>
-          <Icon name="credit-card" size={40} color="#0B549D" />
-          <Text style={styles.optionText}>cards</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -48,23 +41,34 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
   },
-  optionsContainer: {
+  optionPill: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    borderRadius: 25,
+    borderWidth: 2,
+    borderColor: '#0B549D',
+    backgroundColor: '#d3d3d3',
   },
   option: {
-    width: 100,
-    height: 100,
+    flex: 1,
+    height: 50,
     alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  leftOption: {
+    borderTopLeftRadius: 25,
+    borderBottomLeftRadius: 25,
+  },
+  divider: {
+    width: 2,
+    backgroundColor: '#0B549D',
   },
   optionText: {
-    marginTop: 10,
+    marginLeft: 10,
     fontSize: 16,
     color: '#0B549D',
-  },
-  icon: {
-    marginBottom: 5,
   },
 });
 
 export default PaymentOptions;
+

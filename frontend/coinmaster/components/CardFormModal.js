@@ -1,3 +1,4 @@
+// CardFormModal.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, Modal, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
