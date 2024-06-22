@@ -19,6 +19,7 @@ genai.configure(api_key=API_KEY)
 
 def capture(image_files):
     all_steps = []
+    all_json_data = []
     for image_file in image_files:
         with Image.open(image_file) as img:
             with BytesIO() as buffer:
@@ -36,19 +37,36 @@ def capture(image_files):
                 image_bytes = buffer.getvalue()
                 
                 model = genai.GenerativeModel("gemini-pro-vision")
-                response = model.generate_content(glm.Content(parts=[
-                    glm.Part(text='The image is a banking form. Provide a response with an extremely concise, step-by-step guidance on filling each parameter in the form. Each step should cover only one parameter. Ensure the number of steps equals the number of parameters.  Return a list of strings in this format ["Step 1: Description of how to fill the first parameter","Step 2: Description of how to fill the second parameter "]. Do not repeat "Step" in the description. Do not print * to highlight points and if generated replace it with a spacial character.'),
+                response1 = model.generate_content(glm.Content(parts=[
+                    glm.Part(text='The image is a banking form. Provide a response with an extremely concise, step-by-step guidance on filling each parameter in the form. Each step should cover only one parameter. Ensure the number of steps equals the number of parameters. Return a list of strings in this format ["Step 1: Description of how to fill the first parameter","Step 2: Description of how to fill the second parameter "]. Do not repeat "Step" in the description. Do not print * to highlight points and if generated replace it with a special character.'),
                     glm.Part(inline_data=glm.Blob(mime_type=mime_type, data=image_bytes)) 
                 ]))
                 
-                if response and response.parts:
-                    result = response.parts[0].text
-                    steps = [f"{desc.strip()}" for desc in result.split(",")]
+                if response1 and response1.parts:
+                    result1 = response1.parts[0].text
+                    steps = [desc.strip() for desc in re.split(r'\d+\.\s', result1) if desc.strip()]
                     all_steps.extend(steps)
                 else:
                     print("No valid parts found in response or response was blocked.")
                 
-    return all_steps
+                response2 = model.generate_content(glm.Content(parts=[
+                    glm.Part(text='The Images is a banking form. From the form, return a json which will contain the form value asked along with an example for it.Replace spaces with _ . For example, the form has a option of first name , account number, last name ,phone number. It should a json like {"first_name":"John","account_number":42132123,"last_name":"Doe","phone_number":9192939472}]. Remember that this is just an example and if you encounter with this example, dont limit yourself to generate the above json. If you do not encounter any of the json example pairs, use your own understanding and logic to create the json.'),
+                    glm.Part(inline_data=glm.Blob(mime_type=mime_type, data=image_bytes))
+                ]))
+
+                if response2 and response2.parts:
+                    result2 = response2.parts[0].text
+                    json_objects = re.findall(r'{.*?}', result2, re.DOTALL)
+                    for obj in json_objects:
+                        try:
+                            json_data = json.loads(obj)
+                            all_json_data.append(json_data)
+                        except json.JSONDecodeError as e:
+                            print(f"Error decoding JSON: {e}")
+                else:
+                    print("No valid parts found in response or response was blocked.")
+                
+    return all_steps, all_json_data
 
 @app.get("/images")
 def list_images():
