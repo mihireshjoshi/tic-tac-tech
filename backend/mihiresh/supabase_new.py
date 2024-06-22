@@ -17,10 +17,13 @@ import google.ai.generativelanguage as glm
 from io import BytesIO
 import re
 from pydantic import BaseModel
+from twilio.rest import Client as TwilioClient
+import sys
 
 from language import transcribe, translation
 from chatbot import ask_llm
 from capture import capture
+from fraud import process_transaction, is_otp_valid
 
 app = FastAPI()
 
@@ -78,6 +81,17 @@ class CreditCardRequest(BaseModel):
     billing_address: str
     reward_points: float
     interest_rate: float
+
+class Transaction(BaseModel):
+    id: str
+    sender_account_id: int
+    transaction_id: int
+    phone_number: str = "+919987117266"
+
+class OTPVerification(BaseModel):
+    transaction_id: str
+    otp: str
+
 
 @app.post("/signup")
 async def sign_up(sign_up_request: SignUpRequest):
@@ -290,15 +304,13 @@ async def add_credit_card(
         raise HTTPException(status_code=500, detail="Internal Server Error")
     
 
-@app.post("/payment")
-async def payment(request: Request):
-    try:
-        #Implement the fraud detection logic here
-
-        return JSONResponse(content={"message": "Successfully done", "success": True}, status_code=200)
-    except Exception as e:
-        print(e)
-        return JSONResponse(content={"message": "Failed to pay", "success": False}, status_code=500)
+# @app.post("/payment")
+# async def payment(request: Request):
+#     try:
+        
+#     except Exception as e:
+#         print(e)
+#         return JSONResponse(content={"message": "Failed to pay", "success": False}, status_code=500)
     
 
 @app.post("/chattext")
@@ -397,6 +409,31 @@ async def delete_user(delete_user_request: DeleteUserRequest):
     
 
 # @app.route("/in")
+
+@app.get("/test-predict")
+def test_predict(sender_account_id: int, transaction_id: int):
+    phone_number = "+919987117266"
+    transaction_response = supabase.table('transactions').select('*').eq('transactions_id', transaction_id).single().execute()
+    transaction_data = transaction_response.data
+
+    if not transaction_data:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+
+    transaction = Transaction(
+        id=transaction_data['transactions_id'],
+        sender_account_id=sender_account_id,
+        transaction_id=transaction_id,
+        phone_number=phone_number
+    )
+    return process_transaction(transaction)
+
+@app.post("/verify-otp")
+def verify_otp(verification: OTPVerification):
+    if is_otp_valid(verification.transaction_id, verification.otp):
+        return {"message": "OTP verified successfully. Transaction approved."}
+    else:
+        raise HTTPException(status_code=400, detail="Invalid or expired OTP.")
+
 
 
 if __name__ == "__main__":
