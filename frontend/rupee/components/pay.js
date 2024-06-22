@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const PaymentOptions = () => {
   const navigation = useNavigation();
@@ -13,15 +14,28 @@ const PaymentOptions = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Make Payment</Text>
-      <View style={styles.optionPill}>
-        <TouchableOpacity style={[styles.option, styles.leftOption]} onPress={navigateToPayAcc}>
-          <Icon name="user" size={28} color="#0B549D" />
-          <Text style={styles.optionText}>Account</Text>
+      <View style={styles.optionContainer}>
+        <TouchableOpacity style={styles.option} onPress={navigateToPayAcc}>
+          <LinearGradient
+            colors={['#0f2027', '#203a43', '#2c5364']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradient}
+          >
+            <Icon name="user" size={20} color="#fff" />
+            <Text style={styles.optionText}>Account</Text>
+          </LinearGradient>
         </TouchableOpacity>
-        <View style={styles.divider} />
-        <TouchableOpacity style={styles.option}>
-          <Icon name="qrcode" size={28} color="#0B549D" onPress={() => navigation.navigate('Scanner')} />
-          <Text style={styles.optionText}>QR</Text>
+        <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Scanner')}>
+          <LinearGradient
+            colors={['#0f2027', '#203a43', '#2c5364']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradient}
+          >
+            <Icon name="qrcode" size={20} color="#fff" />
+            <Text style={styles.optionText}>QR</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
     </View>
@@ -30,45 +44,46 @@ const PaymentOptions = () => {
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 2.5,
-    borderColor: '#0B549D',
+    backgroundColor: '#f7f7f7',
+    padding: 15,
     borderRadius: 30,
-    padding: 14,
     margin: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 10,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 20,
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 10,
   },
-  optionPill: {
+  optionContainer: {
     flexDirection: 'row',
-    borderRadius: 25,
-    borderWidth: 2,
-    borderColor: '#0B549D',
-    backgroundColor: '#d3d3d3',
+    justifyContent: 'space-around',
   },
   option: {
     flex: 1,
-    height: 50,
-    alignItems: 'center',
+    marginHorizontal: 10,
+    borderRadius: 25,
+    overflow: 'hidden',
+    width:75,
+  },
+  gradient: {
+    flex: 1,
     justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  leftOption: {
-    borderTopLeftRadius: 25,
-    borderBottomLeftRadius: 25,
-  },
-  divider: {
-    width: 2,
-    backgroundColor: '#0B549D',
+    alignItems: 'center',
+    paddingVertical: 15,
   },
   optionText: {
-    marginLeft: 10,
-    fontSize: 16,
-    color: '#0B549D',
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
+    marginTop: 5,
   },
 });
 
 export default PaymentOptions;
-

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../supabaseee/supacreds'; // Adjust the path as needed
+import { LinearGradient } from 'expo-linear-gradient';
 
 const TransComponent = ({ navigation }) => {
   const [accountId, setAccountId] = useState('');
@@ -40,7 +41,10 @@ const TransComponent = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.card}>
+      <LinearGradient
+        colors={['#0f2027', '#203a43', '#2c5364']}
+        style={styles.card}
+      >
         <Text style={styles.label}>Account ID</Text>
         <Text style={styles.accountNumber}>{accountId}</Text>
         <Text style={styles.balanceLabel}>Available Balance</Text>
@@ -52,7 +56,7 @@ const TransComponent = ({ navigation }) => {
         >
           <Text style={styles.buttonText}>View Transactions</Text>
         </TouchableOpacity>
-      </View>
+      </LinearGradient>
     </View>
   );
 };
@@ -62,9 +66,13 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   card: {
-    backgroundColor: '#1C1C2E', // dark background color
     borderRadius: 15,
     padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 10,
     position: 'relative', // Ensure the button is positioned relative to this card
   },
   label: {
@@ -96,6 +104,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: "#FFFFFF",
     borderWidth: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
   buttonText: {
     color: '#FFFFFF',

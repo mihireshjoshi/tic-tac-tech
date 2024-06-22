@@ -1,28 +1,52 @@
-// BottomNavBar.js
-import React from 'react';
+import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 
 const BottomNavBar = () => {
   const navigation = useNavigation();
+  const [selected, setSelected] = useState('home');
+
+  const handlePress = (screen, icon) => {
+    setSelected(icon);
+    if (screen) {
+      navigation.navigate(screen);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.iconContainer} onPress={() => console.log('home')}>
-        <Icon name="home-outline" size={24} color="#fff" />
+      <TouchableOpacity
+        style={styles.iconContainer}
+        onPress={() => handlePress(null, 'home')}
+      >
+        <Icon
+          name="home-outline"
+          size={28}
+          color={selected === 'home' ? "#fff" : "#fff"}
+        />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('Chatbot')}>
-        <Icon name="chatbubble-outline" size={24} color="#fff" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('Scanner')}>
-        <Icon name="qr-code-outline" size={24} color="#fff" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.iconContainer} onPress={() => console.log('Card pressed')}>
-        <Icon name="card-outline" size={24} color="#fff" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.iconContainer} onPress={() => console.log('Profile pressed')}>
-        <Icon name="person-outline" size={24} color="#fff" />
+      <View style={styles.scannerWrapper}>
+        <TouchableOpacity
+          style={styles.scannerIcon}
+          onPress={() => handlePress('Scanner', 'scanner')}
+        >
+          <Icon
+            name="qr-code-outline"
+            size={34}
+            color={selected === 'scanner' ? "#fff" : "#fff"}
+          />
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity
+        style={styles.iconContainer}
+        onPress={() => handlePress('Chatbot', 'chat')}
+      >
+        <Icon
+          name="chatbubble-outline"
+          size={28}
+          color={selected === 'chat' ? "#fff" : "#fff"}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -33,12 +57,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingTop: 6,
-    paddingBottom: 30,
-    backgroundColor: "#0B549D"
+    paddingBottom: 22,
+    backgroundColor: "#0B549D",
+    position: 'relative',
+    borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
   },
   iconContainer: {
     alignItems: 'center',
-    borderColor: 'black',
+  },
+  scannerWrapper: {
+    position: 'absolute',
+    top: -15,
+    left: '50%',
+    transform: [{ translateX: -30 }],
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scannerIcon: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0B549D',
+    borderRadius: 50,
+    padding: 10,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
   },
 });
 

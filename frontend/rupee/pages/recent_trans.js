@@ -26,10 +26,10 @@ const RecentTransactions = ({ navigation }) => {
 
   const renderItem = ({ item }) => (
     <TransactionBox 
-      person={item.name} 
+      person={item.reciever_name} 
       accountNum={item.acc_num} 
       amount={item.amount} 
-      dateTime={item.time} 
+      dateTime={item.timestamp} 
     />
   );
 
