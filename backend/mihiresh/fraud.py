@@ -9,6 +9,7 @@ import joblib
 import numpy as np
 import pandas as pd
 import sys
+import os
 from dateutil import parser
 from supabase import create_client, Client as SupabaseClient
 
@@ -130,8 +131,8 @@ def predicting(sender_account_id, transaction_id):
 
 
 
-account_sid = "ACd312d44acc6ebbb6497de64c84d84167"
-auth_token = "4ead3131c9fdb70117d41468feaec413"
+account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+auth_token = os.getenv("TWILIO_AUTH_TOKEN")
 twilio_client = TwilioClient(account_sid, auth_token)
 
 
