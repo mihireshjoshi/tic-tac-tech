@@ -106,35 +106,38 @@ const QRCodeScanner = () => {
             }, 3000);
         } else {
             if (jsonResponse.message === "Fraudulent transaction detected. OTP sent for verification.") {
+                Alert.alert('Fraud', 'Fraud Detected!!!');
+                navigation.navigate('Home');
                 // Handle OTP verification
-                const otp = prompt("Enter the OTP sent to your phone:");
-                if (otp) {
-                    const verifyOtpResponse = await fetch('http://10.20.2.79:8000/verify-otp', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ transaction_id, otp }),
-                    });
-                    const verifyOtpJsonResponse = await verifyOtpResponse.json();
-                    if (verifyOtpJsonResponse.success) {
-                        Alert.alert('Success', 'Transaction completed successfully.');
-                    } else {
-                        Alert.alert('Error', verifyOtpJsonResponse.message);
-                    }
-                } else {
-                    // If OTP is not entered, discard the transaction
-                    await fetch('http://10.20.2.79:8000/discard-transaction', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ transaction_id }),
-                    });
-                    Alert.alert('Error', 'Transaction discarded due to missing OTP.');
-                }
+                // const otp = prompt("Enter the OTP sent to your phone:");
+                // if (otp) {
+                //     const verifyOtpResponse = await fetch('http://10.20.2.79:8000/verify-otp', {
+                //         method: 'POST',
+                //         headers: {
+                //             'Content-Type': 'application/json',
+                //         },
+                //         body: JSON.stringify({ transaction_id, otp }),
+                //     });
+                //     const verifyOtpJsonResponse = await verifyOtpResponse.json();
+                //     if (verifyOtpJsonResponse.success) {
+                //         Alert.alert('Success', 'Transaction completed successfully.');
+                //     } else {
+                //         Alert.alert('Error', verifyOtpJsonResponse.message);
+                //     }
+                // } else {
+                //     // If OTP is not entered, discard the transaction
+                //     await fetch('http://10.20.2.79:8000/discard-transaction', {
+                //         method: 'POST',
+                //         headers: {
+                //             'Content-Type': 'application/json',
+                //         },
+                //         body: JSON.stringify({ transaction_id }),
+                //     });
+                //     Alert.alert('Error', 'Transaction discarded due to missing OTP.');
+                // }
             } else {
                 Alert.alert('Transaction Error', jsonResponse.message);
+                navigation.navigate('Home')
             }
         }
     } catch (error) {

@@ -121,7 +121,9 @@ class OTPVerification(BaseModel):
 class Transaction(BaseModel):
     id: str
     sender_account_id: int
+    receiver_account_id: int  # Add receiver_account_id to the transaction
     transaction_id: int
+    amount: float  # Add amount to the transaction
     phone_number: str = "+919987117266"
 
 
@@ -590,6 +592,7 @@ async def create_transaction(request: CreateTransactionRequest):
         # Fetch sender and receiver locations
         sender_response = supabase.table('users_b').select('city').eq('account_id', request.sender_account_id).single().execute()
         receiver_response = supabase.table('users_b').select('city').eq('account_id', request.receiver_account_id).single().execute()
+        # receiver_name = supabase.table("users_b").select('first_name').eq('account_id', request.receiver_account_id).single().execute()
 
         if not sender_response.data or not receiver_response.data:
             raise HTTPException(status_code=404, detail="Sender or receiver not found")
@@ -605,7 +608,8 @@ async def create_transaction(request: CreateTransactionRequest):
             "timestamp": timestamp,
             "status": "pending",
             "sender_location": sender_location,
-            "receiver_location": receiver_location
+            "receiver_location": receiver_location,
+            # "receiver_name": receiver_name
         }
 
         response = supabase.table('transactions').insert(data).execute()
@@ -633,23 +637,46 @@ def process_transaction(request: ProcessTransactionRequest):
     transaction = Transaction(
         id=transaction_data['transactions_id'],
         sender_account_id=transaction_data['sender_account_id'],
-        transaction_id=request.transaction_id,
+        receiver_account_id=transaction_data['receiver_account_id'],  # Add this line
+        transaction_id=transaction_data['transactions_id'],
+        amount=transaction_data['amount'],  # Add this line
         phone_number="+919987117266"
     )
     return process_transaction_logic(transaction)
 
 def process_transaction_logic(transaction: Transaction):
     is_fraudulent = predicting(transaction.sender_account_id, transaction.transaction_id)
+    print(f"\n\nFraud: \n{is_fraudulent}\n\n")
     if is_fraudulent:
         otp = generate_otp()
         send_otp(transaction.phone_number, otp)
         store_otp(transaction.id, otp)
         return {"message": "Fraudulent transaction detected. OTP sent for verification.", "success": False}
     else:
-        supabase.table('transactions').update({"status": "completed"}).eq('transactions_id', transaction.transaction_id).execute()
+        # Update transaction status to 'completed'
+        update_response = supabase.table('transactions').update({"status": "completed"}).eq('transactions_id', transaction.transaction_id).execute()        
+        print(f"\n\nResp= \n{update_response}\n\n")
+        # Fetch sender's current balance
+        sender_balance_query = supabase.table('bank_accounts').select('balance').eq('account_id', transaction.sender_account_id).single().execute()
+        sender_balance = sender_balance_query.data['balance']
+        print(f"\n\nSender Balance:\n{sender_balance}\n\n")
+        # Fetch receiver's current balance
+        receiver_balance_query = supabase.table('bank_accounts').select('balance').eq('account_id', transaction.receiver_account_id).single().execute()
+        receiver_balance = receiver_balance_query.data['balance']
+        print(f"\n\nReceiver Balance:\n{receiver_balance}\n\n")
+        # Deduct amount from sender's balance and add to receiver's balance
+        transaction_amount = transaction.amount
+        sender_new_balance = sender_balance - transaction_amount
+        receiver_new_balance = receiver_balance + transaction_amount
         
-    
+        # Update sender's balance in bank_accounts table
+        supabase.table('bank_accounts').update({'balance': sender_new_balance}).eq('account_id', transaction.sender_account_id).execute()
+        
+        # Update receiver's balance in bank_accounts table
+        supabase.table('bank_accounts').update({'balance': receiver_new_balance}).eq('account_id', transaction.receiver_account_id).execute()
+        
         return {"message": "Transaction processed successfully.", "success": True}
+
 
 @app.post("/verify-otp")
 def verify_otp(request: OTPVerification):
