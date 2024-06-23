@@ -20,7 +20,7 @@ export default function Home({ navigation }) {
           <CardCarousel />
           <TransComponent navigation={navigation} />
           <PaymentOptions />
-          <Invests />
+          {/* <Invests /> */}
           <Documents navigation={navigation} />
         </ScrollView>
       </SafeAreaView>
