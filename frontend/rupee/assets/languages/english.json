@@ -117,6 +117,21 @@
         "RecentTransactions": "Recent Transactions",
         "NoTransactions": "No transactions",
         "Account_id": "Account id",
-         "Phone": "Phone"
+         "Phone": "Phone",
+         "FirstName": "First Name",
+    "LastName": "Last Name",
+    "DateOfBirth": "Date of Birth",
+    "Address": "Address",
+    "City": "City",
+    "State": "State",
+    "Country": "Country",
+    "ZipCode": "Zip Code",
+    "RegistrationDate": "Registration Date",
+    "Language": "Language",
+    "Balance": "Balance",
+    "Salary": "Salary",
+    "Occupation": "Occupation",
+    "AccountID": "Account ID",
+    "UPIID": "UPI ID"
     }
 }

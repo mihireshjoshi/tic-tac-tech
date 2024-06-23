@@ -145,7 +145,22 @@ const UserProfile = () => {
         FailedToCapturePhoto: "फोटो कैप्चर करने में विफल",
         Back: "वापस",
         RecentTransactions: "हाल के लेनदेन",
-        NoTransactions: "कोई लेनदेन नहीं"
+        NoTransactions: "कोई लेनदेन नहीं",
+        FirstName: "पहला नाम",
+    LastName: "अंतिम नाम",
+    DateOfBirth: "जन्म तिथि",
+    Address: "पता",
+    City: "शहर",
+    State: "राज्य",
+    Country: "देश",
+    ZipCode: "पिन कोड",
+    RegistrationDate: "पंजीकरण तिथि",
+    Language: "भाषा",
+    Balance: "शेष राशि",
+    Salary: "वेतन",
+    Occupation: "पेशा",
+    AccountID: "खाता आईडी",
+    UPIID: "यूपीआई आईडी"
     }
   });
 
@@ -217,77 +232,77 @@ const UserProfile = () => {
         </View>
         <View style={styles.divider} />
         <View style={styles.profileDetail}>
-          <Text style={styles.label}>{jsonData.hin.first_name}</Text>
+          <Text style={styles.label}>{jsonData.hin.FirstName}</Text>
           <Text style={styles.value}>{userProfile.first_name || 'N/A'}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.profileDetail}>
-          <Text style={styles.label}>Last Name:</Text>
+          <Text style={styles.label}>{jsonData.hin.LastName}</Text>
           <Text style={styles.value}>{userProfile.last_name || 'N/A'}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.profileDetail}>
-          <Text style={styles.label}>Date of Birth:</Text>
+          <Text style={styles.label}>{jsonData.hin.DateOfBirth}</Text>
           <Text style={styles.value}>{userProfile.date_of_birth || 'N/A'}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.profileDetail}>
-          <Text style={styles.label}>Address:</Text>
+          <Text style={styles.label}>{jsonData.hin.Address}</Text>
           <Text style={styles.value}>{userProfile.address || 'N/A'}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.profileDetail}>
-          <Text style={styles.label}>City:</Text>
+          <Text style={styles.label}>{jsonData.hin.City}</Text>
           <Text style={styles.value}>{userProfile.city || 'N/A'}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.profileDetail}>
-          <Text style={styles.label}>State:</Text>
+          <Text style={styles.label}>{jsonData.hin.State}</Text>
           <Text style={styles.value}>{userProfile.state || 'N/A'}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.profileDetail}>
-          <Text style={styles.label}>Country:</Text>
+          <Text style={styles.label}>{jsonData.hin.Country}</Text>
           <Text style={styles.value}>{userProfile.country || 'N/A'}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.profileDetail}>
-          <Text style={styles.label}>Zip Code:</Text>
+          <Text style={styles.label}>{jsonData.hin.ZipCode}</Text>
           <Text style={styles.value}>{userProfile.zip_code || 'N/A'}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.profileDetail}>
-          <Text style={styles.label}>Registration Date:</Text>
+          <Text style={styles.label}>{jsonData.hin.RegistrationDate}</Text>
           <Text style={styles.value}>{new Date(userProfile.registration_date).toDateString()}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.profileDetail}>
-          <Text style={styles.label}>Language:</Text>
+          <Text style={styles.label}>{jsonData.hin.Language}</Text>
           <Text style={styles.value}>{userProfile.language || 'N/A'}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.profileDetail}>
-          <Text style={styles.label}>Balance:</Text>
+          <Text style={styles.label}>{jsonData.hin.Balance}</Text>
           <Text style={styles.value}>{userProfile.balance !== null ? `$${userProfile.balance}` : 'N/A'}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.profileDetail}>
-          <Text style={styles.label}>Salary:</Text>
+          <Text style={styles.label}>{jsonData.hin.Salary}</Text>
           <Text style={styles.value}>{userProfile.salary !== null ? `$${userProfile.salary}` : 'N/A'}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.profileDetail}>
-          <Text style={styles.label}>Occupation:</Text>
+          <Text style={styles.label}>{jsonData.hin.Occupation}</Text>
           <Text style={styles.value}>{userProfile.occupation || 'N/A'}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.profileDetail}>
-          <Text style={styles.label}>Account ID:</Text>
+          <Text style={styles.label}>{jsonData.hin.AccountID}</Text>
           <Text style={styles.value}>{userProfile.account_id || 'N/A'}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.profileDetail}>
-          <Text style={styles.label}>UPI ID:</Text>
+          <Text style={styles.label}>{jsonData.hin.UPIID}</Text>
           <Text style={styles.value}>{userProfile.upi_id || 'N/A'}</Text>
         </View>
       </View>
