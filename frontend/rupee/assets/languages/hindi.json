@@ -119,6 +119,21 @@
         "RecentTransactions": "हाल के लेनदेन",
         "NoTransactions": "कोई लेनदेन नहीं",
         "Account_id": "खाता आईडी",
-         "Phone": "फ़ोन"
+        "Phone": "फ़ोन",
+        "FirstName": "पहला नाम",
+    "LastName": "अंतिम नाम",
+    "DateOfBirth": "जन्म तिथि",
+    "Address": "पता",
+    "City": "शहर",
+    "State": "राज्य",
+    "Country": "देश",
+    "ZipCode": "पिन कोड",
+    "RegistrationDate": "पंजीकरण तिथि",
+    "Language": "भाषा",
+    "Balance": "शेष राशि",
+    "Salary": "वेतन",
+    "Occupation": "पेशा",
+    "AccountID": "खाता आईडी",
+    "UPIID": "यूपीआई आईडी"
     }
 }

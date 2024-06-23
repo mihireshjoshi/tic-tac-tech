@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Modal, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Modal, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 
 const loadLocalizedData = async () => {
   try {
@@ -25,125 +24,125 @@ const loadLocalizedData = async () => {
 
 export default function PasswordModal({ visible, onClose, onSuccess }) {
   const [jsonData, setJsonData] = useState({
-    hin:{
+    hin: {
       AddImage: "छवि जोड़ें",
-        Camera: "कैमरा",
-        Gallery: "गैलरी",
-        Cancel: "रद्द करें",
-        Next: "अगला",
-        PleaseAddImage: "कृपया आगे बढ़ने से पहले एक छवि जोड़ें",
-        CameraPermission: "क्षमा करें, हमें कैमरा अनुमतियों की आवश्यकता है",
-        MediaLibraryPermission: "क्षमा करें, हमें मीडिया लाइब्रेरी अनुमतियों की आवश्यकता है",
-        AddCardDetails: "कार्ड विवरण जोड़ें",
-        CardNumber: "कार्ड नंबर",
-        CardholderName: "कार्डधारक का नाम",
-        ExpirationDate: "समाप्ति की तारीख",
-        CVV: "सीवीवी",
-        CreditLimit: "क्रेडिट लिमिट",
-        Balance: "शेष राशि",
-        Status: "स्थिति",
-        IssuedAt: "जारी किया गया",
-        BillingAddress: "बिलिंग पता",
-        RewardPoints: "इनाम अंक",
-        InterestRate: "ब्याज दर",
-        AddCard: "कार्ड जोड़ें",
-        CardHolder: "कार्ड धारक",
-        ValidThru: "वैध तक",
-        CreditCardApplication: "क्रेडिट कार्ड आवेदन",
-        FullName: "पूरा नाम",
-        DateOfBirth: "जन्म तिथि",
-        Address: "पता",
-        AnnualIncome: "वार्षिक आय",
-        EmploymentStatus: "रोजगार स्थिति",
-        BankName: "बैंक का नाम",
-        ExistingCreditCardNumber: "मौजूदा क्रेडिट कार्ड नंबर (यदि कोई हो)",
-        PreferredCreditLimit: "प्राथमिकता क्रेडिट लिमिट",
-        Investments: "निवेश",
-        crypto: "क्रिप्टो",
-        stocks: "शेयर",
-        bonds: "बॉन्ड्स",
-        properties: "सम्पत्तियाँ",
-        CardDetails: "कार्ड विवरण",
-        Close: "बंद करें",
-        LoanApplication: "ऋण आवेदन",
-        FixedDeposit: "सावधि जमा",
-        AddImageComp: "छवि जोड़ें",
-        CreditCardApplicationForm: "क्रेडिट कार्ड आवेदन",
-        Notification: "सूचना क्लिक की",
-        Profile: "प्रोफ़ाइल क्लिक की",
-        Logo: "लोगो",
-        QRCode: "क्यूआर कोड",
-        account_id: "खाता आईडी",
-        bitcoin: "बिटकॉइन",
-        linechart: "लाइन चार्ट",
-        LoanAmount: "ऋण राशि",
-        LoanTenure: "ऋण अवधि (वर्षों में)",
-        PurposeOfLoan: "ऋण का उद्देश्य",
-        Home: "घर",
-        Chatbot: "चैटबॉट",
-        QRCode: "क्यूआर कोड",
-        Card: "कार्ड",
-        Profile: "प्रोफ़ाइल",
-        homePressed: "होम दबाया गया",
-        chatbotPressed: "चैटबॉट दबाया गया",
-        qrscanPressed: "क्यूआर स्कैन दबाया गया",
-        cardPressed: "कार्ड दबाया गया",
-        profilePressed: "प्रोफ़ाइल दबाया गया",
-        EnterPassword: "पासवर्ड दर्ज करें",
-        Password: "पासवर्ड",
-        Submit: "जमा करें",
-        MakePayment: "भुगतान करें",
-        QR: "क्यूआर",
-        Account: "खाता",
-        UPI: "यूपीआई",
-        Cards: "कार्ड",
-        PayViaQR: "क्यूआर द्वारा भुगतान करें",
-        PayViaAccount: "खाते द्वारा भुगतान करें",
-        PayViaUPI: "यूपीआई द्वारा भुगतान करें",
-        PayViaCards: "कार्ड द्वारा भुगतान करें",
-        PickAnImageFromGallery: "गैलरी से छवि चुनें",
-        TakeAPicture: "तस्वीर क्लिक करें",
-        NoImage: "कोई छवि नहीं",
-        UploadImage: "छवि अपलोड करें",
-        CameraPermissionRequired: "कैमरा अनुमतियाँ आवश्यक हैं",
-        UploadSuccessful: "अपलोड सफल रहा",
-        UploadFailed: "अपलोड असफल रहा",
-        Close: "बंद करें",
-        Person: "व्यक्ति",
-        Amount: "राशि",
-        DateTime: "तारीख और समय",
-        AccountNumber: "खाता संख्या",
-        AvailableBalance: "उपलब्ध शेष राशि",
-        ViewTransactions: "लेनदेन देखें",
-        Balance: "शेष राशि",
-        NoImageSelected: "कोई छवि चयनित नहीं",
-        Apply: "आवेदन करें",
-        Documents: "दस्तावेज़",
-        Email: "ईमेल",
-        Login: "लॉग इन करें",
-        LoginFailed: "लॉगिन विफल",
-        Failure: "असफल",
-        LoginSuccess: "लॉगिन सफल",
-        EnterAccountNumber: "खाता संख्या दर्ज करें",
-        EnterAmount: "राशि दर्ज करें",
-        Pay: "भुगतान करें",
-        AmountTransferred: "राशि सफलतापूर्वक स्थानांतरित!",
-        ReceiverDetails: "प्राप्तकर्ता का विवरण",
-        Username: "उपयोगकर्ता नाम",
-        UPIID: "यूपीआई आईडी",
-        NoAccessToCameraOrGallery: "कैमरा या गैलरी तक पहुंच नहीं",
-        Capture: "कैप्चर करें",
-        FromGalleryOptions: "गैलरी विकल्पों से",
-        OpenCamera: "कैमरा खोलें",
-        PermissionError: "अनुमति त्रुटि",
-        GalleryError: "गैलरी त्रुटि",
-        CameraError: "कैमरा त्रुटि",
-        FailedToGetPermissions: "अनुमतियाँ प्राप्त करने में विफल",
-        FailedToOpenGallery: "गैलरी खोलने में विफल",
-        FailedToCapturePhoto: "फोटो कैप्चर करने में विफल",
-        Back: "वापस",
-        RecentTransactions: "हाल के लेनदेन",
-        NoTransactions: "कोई लेनदेन नहीं"
+      Camera: "कैमरा",
+      Gallery: "गैलरी",
+      Cancel: "रद्द करें",
+      Next: "अगला",
+      PleaseAddImage: "कृपया आगे बढ़ने से पहले एक छवि जोड़ें",
+      CameraPermission: "क्षमा करें, हमें कैमरा अनुमतियों की आवश्यकता है",
+      MediaLibraryPermission: "क्षमा करें, हमें मीडिया लाइब्रेरी अनुमतियों की आवश्यकता है",
+      AddCardDetails: "कार्ड विवरण जोड़ें",
+      CardNumber: "कार्ड नंबर",
+      CardholderName: "कार्डधारक का नाम",
+      ExpirationDate: "समाप्ति की तारीख",
+      CVV: "सीवीवी",
+      CreditLimit: "क्रेडिट लिमिट",
+      Balance: "शेष राशि",
+      Status: "स्थिति",
+      IssuedAt: "जारी किया गया",
+      BillingAddress: "बिलिंग पता",
+      RewardPoints: "इनाम अंक",
+      InterestRate: "ब्याज दर",
+      AddCard: "कार्ड जोड़ें",
+      CardHolder: "कार्ड धारक",
+      ValidThru: "वैध तक",
+      CreditCardApplication: "क्रेडिट कार्ड आवेदन",
+      FullName: "पूरा नाम",
+      DateOfBirth: "जन्म तिथि",
+      Address: "पता",
+      AnnualIncome: "वार्षिक आय",
+      EmploymentStatus: "रोजगार स्थिति",
+      BankName: "बैंक का नाम",
+      ExistingCreditCardNumber: "मौजूदा क्रेडिट कार्ड नंबर (यदि कोई हो)",
+      PreferredCreditLimit: "प्राथमिकता क्रेडिट लिमिट",
+      Investments: "निवेश",
+      crypto: "क्रिप्टो",
+      stocks: "शेयर",
+      bonds: "बॉन्ड्स",
+      properties: "सम्पत्तियाँ",
+      CardDetails: "कार्ड विवरण",
+      Close: "बंद करें",
+      LoanApplication: "ऋण आवेदन",
+      FixedDeposit: "सावधि जमा",
+      AddImageComp: "छवि जोड़ें",
+      CreditCardApplicationForm: "क्रेडिट कार्ड आवेदन",
+      Notification: "सूचना क्लिक की",
+      Profile: "प्रोफ़ाइल क्लिक की",
+      Logo: "लोगो",
+      QRCode: "क्यूआर कोड",
+      account_id: "खाता आईडी",
+      bitcoin: "बिटकॉइन",
+      linechart: "लाइन चार्ट",
+      LoanAmount: "ऋण राशि",
+      LoanTenure: "ऋण अवधि (वर्षों में)",
+      PurposeOfLoan: "ऋण का उद्देश्य",
+      Home: "घर",
+      Chatbot: "चैटबॉट",
+      QRCode: "क्यूआर कोड",
+      Card: "कार्ड",
+      Profile: "प्रोफ़ाइल",
+      homePressed: "होम दबाया गया",
+      chatbotPressed: "चैटबॉट दबाया गया",
+      qrscanPressed: "क्यूआर स्कैन दबाया गया",
+      cardPressed: "कार्ड दबाया गया",
+      profilePressed: "प्रोफ़ाइल दबाया गया",
+      EnterPassword: "पासवर्ड दर्ज करें",
+      Password: "पासवर्ड",
+      Submit: "जमा करें",
+      MakePayment: "भुगतान करें",
+      QR: "क्यूआर",
+      Account: "खाता",
+      UPI: "यूपीआई",
+      Cards: "कार्ड",
+      PayViaQR: "क्यूआर द्वारा भुगतान करें",
+      PayViaAccount: "खाते द्वारा भुगतान करें",
+      PayViaUPI: "यूपीआई द्वारा भुगतान करें",
+      PayViaCards: "कार्ड द्वारा भुगतान करें",
+      PickAnImageFromGallery: "गैलरी से छवि चुनें",
+      TakeAPicture: "तस्वीर क्लिक करें",
+      NoImage: "कोई छवि नहीं",
+      UploadImage: "छवि अपलोड करें",
+      CameraPermissionRequired: "कैमरा अनुमतियाँ आवश्यक हैं",
+      UploadSuccessful: "अपलोड सफल रहा",
+      UploadFailed: "अपलोड असफल रहा",
+      Close: "बंद करें",
+      Person: "व्यक्ति",
+      Amount: "राशि",
+      DateTime: "तारीख और समय",
+      AccountNumber: "खाता संख्या",
+      AvailableBalance: "उपलब्ध शेष राशि",
+      ViewTransactions: "लेनदेन देखें",
+      Balance: "शेष राशि",
+      NoImageSelected: "कोई छवि चयनित नहीं",
+      Apply: "आवेदन करें",
+      Documents: "दस्तावेज़",
+      Email: "ईमेल",
+      Login: "लॉग इन करें",
+      LoginFailed: "लॉगिन विफल",
+      Failure: "असफल",
+      LoginSuccess: "लॉगिन सफल",
+      EnterAccountNumber: "खाता संख्या दर्ज करें",
+      EnterAmount: "राशि दर्ज करें",
+      Pay: "भुगतान करें",
+      AmountTransferred: "राशि सफलतापूर्वक स्थानांतरित!",
+      ReceiverDetails: "प्राप्तकर्ता का विवरण",
+      Username: "उपयोगकर्ता नाम",
+      UPIID: "यूपीआई आईडी",
+      NoAccessToCameraOrGallery: "कैमरा या गैलरी तक पहुंच नहीं",
+      Capture: "कैप्चर करें",
+      FromGalleryOptions: "गैलरी विकल्पों से",
+      OpenCamera: "कैमरा खोलें",
+      PermissionError: "अनुमति त्रुटि",
+      GalleryError: "गैलरी त्रुटि",
+      CameraError: "कैमरा त्रुटि",
+      FailedToGetPermissions: "अनुमतियाँ प्राप्त करने में विफल",
+      FailedToOpenGallery: "गैलरी खोलने में विफल",
+      FailedToCapturePhoto: "फोटो कैप्चर करने में विफल",
+      Back: "वापस",
+      RecentTransactions: "हाल के लेनदेन",
+      NoTransactions: "कोई लेनदेन नहीं"
     }
   });
 
@@ -152,19 +151,90 @@ export default function PasswordModal({ visible, onClose, onSuccess }) {
       setJsonData(data);
     });
   }, []);
-  
-
-
-
-
-
-
 
   const [password, setPassword] = useState('');
 
-  const handleTransfer = () => {
-    onSuccess();
+  const handlePayment = async () => {
+    try {
+      const email = await AsyncStorage.getItem('email');
+      const sender_acc = await AsyncStorage.getItem('account_id');
+      const receiver_acc = await AsyncStorage.getItem('abc');
+      const amount = await AsyncStorage.getItem('xyz');
+      console.log("email>>>>>", email);
+      const payload = {
+        sender_account_id: sender_acc,
+        receiver_account_id: receiver_acc,
+        amount: parseFloat(amount),
+        password: password,
+        email: email,
+      };
+      console.log("Email:", email);
+      console.log("Sender Account ID:", sender_acc);
+      console.log("Receiver Account ID:", receiver_acc);
+      console.log("Amount:", amount);
+      console.log("Password:", password);
+      // Verify password
+      const verifyResponse = await fetch('http://10.20.2.79:8000/verify-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: email, password: password }),
+      });
+      console.log(">>>>", verifyResponse);
+      // if (verifyResponse.status !== 200) {
+      //   Alert.alert('Invalid Password', 'The password you entered is incorrect.');
+      //   return;
+      // }
+  
+      // Create the transaction
+      const createResponse = await fetch('http://10.20.2.79:8000/create-transaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+  
+      if (createResponse.status !== 200) {
+        const errorResponse = await createResponse.json();
+        Alert.alert('Transaction Error', errorResponse.detail || 'Failed to create transaction.');
+        return;
+      }
+  
+      const createJsonResponse = await createResponse.json();
+      const { transaction_id } = createJsonResponse;
+      console.log("createjson>>>>>", createJsonResponse);
+      // Process the transaction
+      const processResponse = await fetch('http://10.20.2.79:8000/process-transaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(createJsonResponse),
+      });
+      console.log(">>>>>", processResponse);
+      console.log('Response status: ', processResponse.status);
+      const jsonResponse = await processResponse.json();
+      console.log('JSON Response: ', jsonResponse);
+  
+      if (jsonResponse.success) {
+        // Handle the response as needed
+        Alert.alert('Success', 'Transaction completed successfully.');
+      } else {
+        if (jsonResponse.message === "Fraudulent transaction detected. OTP sent for verification.") {
+          Alert.alert('Fraud', 'Fraud Detected!!!');
+          // Handle OTP verification if needed
+        } else {
+          Alert.alert('Transaction Error', jsonResponse.message);
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      Alert.alert('Error', 'An error occurred during the transaction.');
+    }
   };
+  
 
   return (
     <Modal
@@ -183,7 +253,7 @@ export default function PasswordModal({ visible, onClose, onSuccess }) {
             onChangeText={setPassword}
             secureTextEntry
           />
-          <TouchableOpacity style={styles.button} onPress={handleTransfer}>
+          <TouchableOpacity style={styles.button} onPress={handlePayment}>
             <Text style={styles.buttonText}>{jsonData.hin.Submit}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
@@ -266,4 +336,3 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 });
-

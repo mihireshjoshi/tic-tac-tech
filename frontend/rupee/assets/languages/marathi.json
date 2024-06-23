@@ -117,7 +117,25 @@
         "RecentTransactions": "अलीकडील व्यवहार",
         "NoTransactions": "कोणतेही व्यवहार नाहीत",
         "Account_id": "खाते आयडी",
-        "Phone": "फोन"
+        "Phone": "फोन",
+        
+            "FirstName": "पहिले नाव",
+            "LastName": "आडनाव",
+            "DateOfBirth": "जन्म तारीख",
+            "Address": "पत्ता",
+            "City": "शहर",
+            "State": "राज्य",
+            "Country": "देश",
+            "ZipCode": "पिन कोड",
+            "RegistrationDate": "नोंदणी तारीख",
+            "Language": "भाषा",
+            "Balance": "शिल्लक",
+            "Salary": "पगार",
+            "Occupation": "व्यवसाय",
+            "AccountID": "खाते आयडी",
+            "UPIID": "यूपीआय आयडी"
+        
+        
          
     }
 }

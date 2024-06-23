@@ -164,7 +164,10 @@ export default function PayScreen() {
   const [amount, setAmount] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
 
-  const handlePay = () => {
+
+  const handlePay = async () => {
+    await AsyncStorage.setItem('abc', accountNumber);
+    await AsyncStorage.setItem('xyz', amount);
     setModalVisible(true);
   };
 

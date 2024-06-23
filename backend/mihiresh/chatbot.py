@@ -67,7 +67,9 @@ def make_prompt(ques, knowledge):
     - If the question relates to finance, offer a logical solution.
     - Provide an explanation for your response.
     - The answer should be of a small length but should be given using logic
+    - For example, if a user places a concern that he received a misleading url on SMS or mail like "You have won 1000000 rupees. Click on this link to claim". This situation is highly misleading and suspcious so when such a conern is put porth, generate a output like , 'Such SMS are often misleading and fraudlent .Avoid responding'"
     
+
 
     Generate a comprehensive and user-friendly response.
     """

@@ -447,7 +447,7 @@ def generate_otp():
 
 def send_otp(phone_number, otp):
     message = twilio_client.messages.create(
-        body=f"Your OTP for transaction verification is: {otp}",
+        body=f"Suspicious activity has been detected! Please Check",
         from_='+12166778068',
         to=phone_number
     )
@@ -630,7 +630,7 @@ async def create_transaction(request: CreateTransactionRequest):
 def process_transaction(request: ProcessTransactionRequest):
     transaction_response = supabase.table('transactions').select('*').eq('transactions_id', request.transaction_id).single().execute()
     transaction_data = transaction_response.data
-
+    print(f"\n\nTransaction Data:\n{transaction_data}\n\n")
     if not transaction_data:
         raise HTTPException(status_code=404, detail="Transaction not found")
 
@@ -642,6 +642,7 @@ def process_transaction(request: ProcessTransactionRequest):
         amount=transaction_data['amount'],  # Add this line
         phone_number="+919987117266"
     )
+    print(f"\n\nTransaction:\n{transaction}\n\n")
     return process_transaction_logic(transaction)
 
 def process_transaction_logic(transaction: Transaction):

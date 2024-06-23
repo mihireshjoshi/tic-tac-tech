@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const TransactionBox = ({ person, accountNum, amount, dateTime, amountStyle }) => {
+const TransactionBox = ({ person, amount, dateTime, amountStyle }) => {
   return (
     <View style={styles.container}>
       <View style={styles.nameAccContainer}>
         <Text style={styles.person}>{person}</Text>
-        <Text style={styles.accountNum}>{accountNum}</Text>
+        
       </View>
       <View style={styles.amountDateContainer}>
         <Text style={[styles.amount, amountStyle]}>{amount}</Text>
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   },
   nameAccContainer: {
     flexDirection: 'column',
-    justifyContent: 'space-between',
+    justifyContent: 'center'
   },
   person: {
     fontSize: 16,
