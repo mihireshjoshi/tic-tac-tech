@@ -49,8 +49,7 @@ const RecentTransactions = ({ navigation }) => {
 
     return (
       <TransactionBox 
-        person={item.reciever_name || 'N/A'} 
-        accountNum={item.reciever_account_id?.toString() || 'N/A'} 
+        person={item.reciever_name || 'Soham'} 
         amount={`${sign} $${item.amount?.toString() || 'N/A'}`} 
         dateTime={item.timestamp ? new Date(item.timestamp).toString() : 'N/A'} 
         amountStyle={amountStyle}
